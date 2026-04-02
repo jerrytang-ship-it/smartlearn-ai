@@ -548,8 +548,31 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   const [showCombo, setShowCombo] = useState(false);
   const [xpTrigger, setXpTrigger] = useState(0);
   const [wrongIds, setWrongIds] = useState<number[]>([]);
-  const [originalCount, setOriginalCount] = useState(0); // track original question count for scoring
-  const [isRetry, setIsRetry] = useState(false); // is current question a retry
+  const [originalCount, setOriginalCount] = useState(0);
+  const [isRetry, setIsRetry] = useState(false);
+  const [showResume, setShowResume] = useState(false);
+  const [savedProgress, setSavedProgress] = useState<{ current_index: number; score: number; wrong_ids: string } | null>(null);
+
+  // Save progress to Supabase
+  const saveProgress = useCallback(async (idx: number, sc: number, wrongs: number[]) => {
+    if (!user || !chapterId || isReview) return;
+    await supabase.from("quiz_progress").upsert({
+      user_id: user.id,
+      chapter_id: chapterId,
+      current_index: idx,
+      score: sc,
+      wrong_ids: JSON.stringify(wrongs),
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "user_id,chapter_id" });
+  }, [user, chapterId, isReview]);
+
+  // Delete progress on completion
+  const clearProgress = useCallback(async () => {
+    if (!user || !chapterId) return;
+    await supabase.from("quiz_progress").delete()
+      .eq("user_id", user.id)
+      .eq("chapter_id", chapterId);
+  }, [user, chapterId]);
 
   useEffect(() => {
     async function fetchQuestions() {
@@ -592,12 +615,27 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
 
         setQuestions(mapped);
         setOriginalCount(mapped.length);
+
+        // Check for saved progress (only for chapter quizzes, not reviews)
+        if (user && chapterId && !isReview) {
+          const { data: progress } = await supabase
+            .from("quiz_progress")
+            .select("*")
+            .eq("user_id", user.id)
+            .eq("chapter_id", chapterId)
+            .single();
+
+          if (progress && progress.current_index > 0) {
+            setSavedProgress(progress);
+            setShowResume(true);
+          }
+        }
       }
       setLoading(false);
     }
 
     fetchQuestions();
-  }, [chapterId]);
+  }, [chapterId, user, isReview]);
 
   const handleAnswer = useCallback(async (correct: boolean, optionId: number) => {
     if (correct) {
@@ -637,7 +675,12 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
         p_is_correct: correct,
       });
     }
-  }, [user, questions, currentIndex, combo]);
+
+    // Save progress after each answer
+    const newScore = correct && !isRetry ? score + 1 : score;
+    const newWrongs = !correct ? [...wrongIds, questions[currentIndex].id] : wrongIds;
+    saveProgress(currentIndex + 1, newScore, newWrongs);
+  }, [user, questions, currentIndex, combo, score, wrongIds, isRetry, saveProgress]);
 
   const handleNext = async () => {
     playTap();
@@ -650,6 +693,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
           p_score: score,
         });
         await refreshStats();
+        await clearProgress();
       }
       setCompleted(true);
     } else {
@@ -674,6 +718,46 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6">
         <MascotBubble message="這個章節暫時還沒有題目，快回去看看其他章節吧！" mood="thinking" mascotSize={64} />
         <Link href="/" className="btn-3d-primary mt-6 text-center">返回地圖</Link>
+      </div>
+    );
+  }
+
+  // Resume prompt
+  if (showResume && savedProgress) {
+    const resumeIndex = savedProgress.current_index;
+    const resumeTotal = originalCount;
+
+    return (
+      <div className="min-h-screen bg-[#FFF8F0] flex flex-col items-center justify-center px-6 text-center">
+        <Mascot size={100} mood="waving" />
+        <h2 className="text-xl font-extrabold text-[#2D2D2D] mt-4 mb-2">歡迎返嚟！</h2>
+        <p className="text-[#A0907E] mb-1">你上次做到第 {resumeIndex}/{resumeTotal} 題</p>
+        <p className="text-[#A0907E] mb-6">得分：{savedProgress.score} 分</p>
+
+        <button
+          onClick={() => {
+            setCurrentIndex(savedProgress.current_index);
+            setScore(savedProgress.score);
+            setWrongIds(JSON.parse(savedProgress.wrong_ids || "[]"));
+            setIsRetry(savedProgress.current_index >= originalCount);
+            setShowResume(false);
+          }}
+          className="btn-3d-primary w-full max-w-xs text-lg mb-3"
+        >
+          繼續上次進度 ▶
+        </button>
+        <button
+          onClick={async () => {
+            await clearProgress();
+            setShowResume(false);
+          }}
+          className="w-full max-w-xs py-3 rounded-2xl border-2 border-[#F0E8E0] text-[#A0907E] font-bold"
+        >
+          重新開始
+        </button>
+        <Link href="/" className="text-sm text-[#C4B5A5] mt-4 font-medium">
+          返回課程
+        </Link>
       </div>
     );
   }
