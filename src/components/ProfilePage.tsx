@@ -1,0 +1,155 @@
+"use client";
+
+import { useState } from "react";
+import { useUser } from "@/lib/user";
+import LoginModal from "./LoginModal";
+import Link from "next/link";
+import Mascot from "./Mascot";
+import EditNickname from "./EditNickname";
+
+export default function ProfilePage() {
+  const [showLogin, setShowLogin] = useState(false);
+  const [showEditNickname, setShowEditNickname] = useState(false);
+  const { user, stats, loading } = useUser();
+
+  if (loading || !user || !stats) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-float">
+          <Mascot size={80} mood="thinking" />
+        </div>
+      </div>
+    );
+  }
+
+  const levelProgress = (stats.xp % 300) / 300;
+  const accuracy = stats.totalAnswered > 0
+    ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100)
+    : 0;
+
+  return (
+    <div className="px-4 pb-28 pt-4 max-w-lg mx-auto">
+      {/* Profile header card */}
+      <div className="bg-gradient-to-br from-primary to-secondary rounded-3xl p-6 text-white mb-6 shadow-[0_6px_0_0_#5A10D4] relative overflow-hidden">
+        <div className="absolute top-0 right-0 opacity-10">
+          <Mascot size={140} mood="celebrating" />
+        </div>
+
+        <div className="flex items-center gap-4 relative z-10">
+          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+            <Mascot size={48} mood="happy" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-extrabold">{user.displayName}</h2>
+            </div>
+            <button
+              onClick={() => setShowEditNickname(true)}
+              className="flex items-center gap-1 text-white/50 text-xs font-medium hover:text-white/80 transition-colors mt-0.5"
+            >
+              暱稱：{user.nickname} ✏️
+            </button>
+            <p className="text-white/70 text-sm font-medium">
+              等級 {stats.level} · {user.isAnonymous ? "訪客" : user.email}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 relative z-10">
+          <div className="flex justify-between text-xs font-bold mb-1">
+            <span className="text-white/70">等級 {stats.level}</span>
+            <span className="text-white/70">等級 {stats.level + 1}</span>
+          </div>
+          <div className="h-4 bg-white/20 rounded-full overflow-hidden">
+            <div className="h-full bg-xp rounded-full transition-all" style={{ width: `${levelProgress * 100}%` }} />
+          </div>
+          <p className="text-xs text-white/60 mt-1 text-center font-medium">
+            還需要 {300 - (stats.xp % 300)} XP 升級
+          </p>
+        </div>
+      </div>
+
+      {user.isAnonymous && (
+        <button
+          onClick={() => setShowLogin(true)}
+          className="w-full bg-white border-2 border-[#F0E8E0] shadow-[0_4px_0_0_#F0E8E0] active:translate-y-1 active:shadow-none text-[#2D2D2D] font-bold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 mb-6"
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+          </svg>
+          使用 Google 登入保存進度
+        </button>
+      )}
+
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="bg-white rounded-2xl p-4 border-2 border-streak/20 shadow-[0_3px_0_0] shadow-streak/20">
+          <div className="text-3xl mb-1 animate-flame">🔥</div>
+          <p className="text-2xl font-extrabold text-streak">{stats.streak} 天</p>
+          <p className="text-xs font-bold text-[#A0907E]">連續學習</p>
+          <p className="text-xs text-[#C4B5A5] mt-1">最長 {stats.longestStreak} 天</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-4 border-2 border-xp/20 shadow-[0_3px_0_0] shadow-xp/20">
+          <div className="text-3xl mb-1">⚡</div>
+          <p className="text-2xl font-extrabold text-xp">{stats.xp}</p>
+          <p className="text-xs font-bold text-[#A0907E]">總經驗值</p>
+          <p className="text-xs text-[#C4B5A5] mt-1">等級 {stats.level}</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-4 border-2 border-primary/20 shadow-[0_3px_0_0] shadow-primary/20">
+          <div className="text-3xl mb-1">📚</div>
+          <p className="text-2xl font-extrabold text-primary">{stats.chaptersCompleted}</p>
+          <p className="text-xs font-bold text-[#A0907E]">完成章節</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-4 border-2 border-success/20 shadow-[0_3px_0_0] shadow-success/20">
+          <div className="text-3xl mb-1">🎯</div>
+          <p className="text-2xl font-extrabold text-success">{accuracy}%</p>
+          <p className="text-xs font-bold text-[#A0907E]">準確率</p>
+          <p className="text-xs text-[#C4B5A5] mt-1">{stats.totalAnswered} 題已答</p>
+        </div>
+      </div>
+
+      {/* Achievements */}
+      <div className="bg-white rounded-2xl p-5 border-2 border-[#F0E8E0] shadow-[0_3px_0_0_#F0E8E0]">
+        <h3 className="font-extrabold text-base mb-4 text-[#2D2D2D]">🏆 成就</h3>
+        <div className="flex gap-3">
+          {[
+            { icon: "🌟", name: "初學者", unlocked: stats.chaptersCompleted >= 1, bg: "bg-xp/15 border-xp/20" },
+            { icon: "🔥", name: "7天連續", unlocked: stats.longestStreak >= 7, bg: "bg-streak/15 border-streak/20" },
+            { icon: "🧠", name: "AI專家", unlocked: stats.chaptersCompleted >= 10, bg: "bg-secondary/15 border-secondary/20" },
+            { icon: "🔒", name: "???", unlocked: false, bg: "bg-[#FFE8D9] border-[#F0E8E0]" },
+          ].map((a) => (
+            <div key={a.name} className={`flex-1 text-center ${a.unlocked ? "" : "opacity-40"}`}>
+              <div className={`w-14 h-14 mx-auto rounded-2xl border-2 flex items-center justify-center text-2xl mb-1.5 ${a.bg}`}>
+                {a.icon}
+              </div>
+              <p className="text-xs font-bold text-[#A0907E]">{a.name}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Parent dashboard link */}
+      <Link href="/parent" className="block mt-6 active:scale-95 transition-transform">
+        <div className="bg-white border-2 border-[#F0E8E0] rounded-2xl p-4 shadow-[0_3px_0_0_#F0E8E0] flex items-center gap-3">
+          <span className="text-2xl">📊</span>
+          <div className="flex-1">
+            <p className="font-extrabold text-sm text-[#2D2D2D]">學習報告</p>
+            <p className="text-xs text-[#C4B5A5]">查看詳細學習進度和答題記錄</p>
+          </div>
+          <svg className="w-5 h-5 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </Link>
+
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+      {showEditNickname && <EditNickname onClose={() => setShowEditNickname(false)} />}
+    </div>
+  );
+}

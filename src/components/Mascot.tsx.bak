@@ -1,0 +1,163 @@
+"use client";
+
+/**
+ * 小海 (Xiǎo Hǎi) — The mascot for 智學AI
+ * A cute Chinese White Dolphin (中華白海豚), iconic to Hong Kong.
+ * Pink body, friendly expression, rendered as pure SVG.
+ */
+
+type MascotMood = "happy" | "thinking" | "celebrating" | "encouraging" | "waving";
+
+interface MascotProps {
+  size?: number;
+  mood?: MascotMood;
+  className?: string;
+}
+
+export default function Mascot({ size = 80, mood = "happy", className = "" }: MascotProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 120 120"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Sparkles for celebrating */}
+      {mood === "celebrating" && (
+        <>
+          <text x="8" y="18" fontSize="11">✨</text>
+          <text x="100" y="14" fontSize="9">✨</text>
+          <text x="4" y="100" fontSize="9">🎉</text>
+          <text x="104" y="98" fontSize="9">🎉</text>
+        </>
+      )}
+
+      {/* Tail — curved, comes from back of body */}
+      <path
+        d={mood === "celebrating"
+          ? "M28 72 Q10 60 8 42 Q6 32 14 28"
+          : mood === "waving"
+          ? "M28 72 Q12 62 10 46 Q8 36 16 32"
+          : "M28 72 Q14 65 12 50 Q10 40 18 36"
+        }
+        stroke="#F5A0B8"
+        strokeWidth="5"
+        fill="none"
+        strokeLinecap="round"
+      />
+      {/* Tail fluke */}
+      <path
+        d={mood === "celebrating"
+          ? "M14 28 Q8 20 4 24 Q10 30 14 28 M14 28 Q18 18 14 14 Q10 22 14 28"
+          : mood === "waving"
+          ? "M16 32 Q10 24 6 28 Q12 34 16 32 M16 32 Q20 22 16 18 Q12 26 16 32"
+          : "M18 36 Q12 28 8 32 Q14 38 18 36 M18 36 Q22 26 18 22 Q14 30 18 36"
+        }
+        fill="#F8B4C8"
+      />
+
+      {/* Body — rounded dolphin shape */}
+      <ellipse cx="62" cy="62" rx="36" ry="30" fill="#F8B4C8" />
+
+      {/* Belly — lighter area */}
+      <ellipse cx="62" cy="68" rx="26" ry="18" fill="#FDE4EC" />
+
+      {/* Dorsal fin on top */}
+      <path d="M58 34 Q56 18 68 24 Q64 32 62 34" fill="#F5A0B8" />
+
+      {/* Snout / beak — elongated front */}
+      <path d="M88 56 Q106 56 108 62 Q106 68 88 68" fill="#F8B4C8" />
+      <path d="M88 60 Q102 60 104 62 Q102 64 88 64" fill="#FDE4EC" />
+
+      {/* Pectoral fin — side flipper */}
+      {mood === "waving" ? (
+        <path d="M56 78 Q42 88 38 80 Q44 76 52 76" fill="#F5A0B8">
+          <animateTransform attributeName="transform" type="rotate" values="-5 50 78;5 50 78;-5 50 78" dur="0.6s" repeatCount="indefinite" />
+        </path>
+      ) : (
+        <path d="M52 78 Q40 92 36 86 Q42 80 50 78" fill="#F5A0B8" />
+      )}
+
+      {/* Right flipper (other side, small) */}
+      <path d="M72 78 Q80 90 84 84 Q78 80 74 78" fill="#F5A0B8" />
+
+      {/* Eyes */}
+      {mood === "celebrating" ? (
+        <>
+          {/* Star eyes */}
+          <text x="66" y="58" fontSize="10" textAnchor="middle" fill="#F72585">★</text>
+          <text x="84" y="58" fontSize="10" textAnchor="middle" fill="#F72585">★</text>
+        </>
+      ) : mood === "thinking" ? (
+        <>
+          {/* One dot, one squint */}
+          <circle cx="68" cy="54" r="3.5" fill="#1a1a2e" />
+          <circle cx="69.5" cy="52.5" r="1.2" fill="white" />
+          <path d="M80 54 Q84 50 88 54" stroke="#1a1a2e" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+        </>
+      ) : (
+        <>
+          {/* Round happy eyes with shine */}
+          <circle cx="68" cy="54" r="4" fill="#1a1a2e" />
+          <circle cx="69.5" cy="52.5" r="1.5" fill="white" />
+          <circle cx="84" cy="54" r="4" fill="#1a1a2e" />
+          <circle cx="85.5" cy="52.5" r="1.5" fill="white" />
+        </>
+      )}
+
+      {/* Blush spots */}
+      <circle cx="62" cy="62" r="4" fill="#F72585" opacity="0.12" />
+      <circle cx="92" cy="62" r="4" fill="#F72585" opacity="0.12" />
+
+      {/* Mouth */}
+      {mood === "celebrating" ? (
+        <path d="M72 64 Q78 72 86 64" stroke="#E0607E" strokeWidth="2" fill="none" strokeLinecap="round" />
+      ) : mood === "thinking" ? (
+        <circle cx="80" cy="66" r="2.5" fill="none" stroke="#1a1a2e" strokeWidth="1.5" />
+      ) : mood === "encouraging" ? (
+        <path d="M72 64 Q78 70 86 64" stroke="#E0607E" strokeWidth="2" fill="none" strokeLinecap="round" />
+      ) : (
+        <path d="M74 64 Q78 69 84 64" stroke="#1a1a2e" strokeWidth="2" fill="none" strokeLinecap="round" />
+      )}
+
+      {/* Blowhole — small dot on top of head */}
+      <ellipse cx="72" cy="36" rx="2" ry="1.2" fill="#E899AD" />
+
+      {/* Water spout for celebrating */}
+      {mood === "celebrating" && (
+        <>
+          <path d="M72 34 Q70 24 66 18" stroke="#4CC9F0" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6" />
+          <path d="M72 34 Q74 22 78 16" stroke="#4CC9F0" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6" />
+          <circle cx="66" cy="16" r="2" fill="#4CC9F0" opacity="0.5" />
+          <circle cx="78" cy="14" r="2" fill="#4CC9F0" opacity="0.5" />
+          <circle cx="72" cy="12" r="1.5" fill="#4CC9F0" opacity="0.4" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+/** Speech bubble with mascot */
+export function MascotBubble({
+  message,
+  mood = "happy",
+  mascotSize = 48,
+  className = "",
+}: {
+  message: string;
+  mood?: MascotMood;
+  mascotSize?: number;
+  className?: string;
+}) {
+  return (
+    <div className={`flex items-start gap-3 ${className}`}>
+      <div className="flex-shrink-0 animate-float">
+        <Mascot size={mascotSize} mood={mood} />
+      </div>
+      <div className="relative bg-white rounded-2xl rounded-tl-md px-4 py-3 shadow-card border border-gray-100 flex-1">
+        <p className="text-sm font-medium text-gray-700 leading-relaxed">{message}</p>
+      </div>
+    </div>
+  );
+}

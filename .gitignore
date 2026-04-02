@@ -28,9 +28,13 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# service account key (NEVER commit this)
+service-account.json
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.claude/
