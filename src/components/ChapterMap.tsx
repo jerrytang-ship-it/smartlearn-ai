@@ -275,7 +275,12 @@ function ChapterNode({ chapter, index, theme }: { chapter: Chapter; index: numbe
         )}
       </div>
 
-      <p className={`mt-2 text-sm font-bold text-center max-w-[100px] leading-tight ${
+      <p className={`mt-2 text-xs font-bold ${
+        isLocked ? "text-[#C4B5A5]" : isComplete ? "text-success/70" : "text-[#A0907E]"
+      }`}>
+        第 {index + 1} 課
+      </p>
+      <p className={`text-sm font-bold text-center max-w-[100px] leading-tight ${
         isLocked ? "text-[#C4B5A5]" : isComplete ? "text-success" : "text-[#2D2D2D]"
       }`}>
         {chapter.title}
