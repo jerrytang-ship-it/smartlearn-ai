@@ -726,28 +726,40 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
 
   // Resume prompt
   if (showResume && savedProgress) {
-    const resumeIndex = Math.min(savedProgress.current_index, originalCount);
+    const savedIdx = savedProgress.current_index;
+    const allOriginalDone = savedIdx >= originalCount;
+    const displayIndex = Math.min(savedIdx, originalCount);
     const resumeTotal = originalCount;
 
     return (
       <div className="min-h-screen bg-[#FFF8F0] flex flex-col items-center justify-center px-6 text-center">
         <Mascot size={100} mood="waving" />
         <h2 className="text-xl font-extrabold text-[#2D2D2D] mt-4 mb-2">歡迎返嚟！</h2>
-        <p className="text-[#A0907E] mb-1">你上次做到第 {resumeIndex}/{resumeTotal} 題</p>
-        <p className="text-[#A0907E] mb-6">得分：{savedProgress.score} 分</p>
+        <p className="text-[#A0907E] mb-1">
+          {allOriginalDone
+            ? `你已完成所有 ${resumeTotal} 題`
+            : `你上次做到第 ${displayIndex}/${resumeTotal} 題`
+          }
+        </p>
+        <p className="text-[#A0907E] mb-6">得分：{savedProgress.score}/{resumeTotal}</p>
 
         <button
           onClick={() => {
-            const safeIndex = Math.min(savedProgress.current_index, originalCount);
+            // If all original questions were done, restart from 0 (they were in retry loop)
+            // Otherwise resume from where they left off
+            const safeIndex = allOriginalDone ? 0 : Math.min(savedIdx, originalCount - 1);
             setCurrentIndex(safeIndex);
-            setScore(savedProgress.score);
+            setScore(allOriginalDone ? 0 : savedProgress.score);
             setWrongIds([]);
             setIsRetry(false);
             setShowResume(false);
+            if (allOriginalDone) {
+              clearProgress();
+            }
           }}
           className="btn-3d-primary w-full max-w-xs text-lg mb-3"
         >
-          繼續上次進度 ▶
+          {allOriginalDone ? "重新開始 ▶" : "繼續上次進度 ▶"}
         </button>
         <button
           onClick={async () => {
