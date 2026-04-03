@@ -676,11 +676,13 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
       });
     }
 
-    // Save progress after each answer
-    const newScore = correct && !isRetry ? score + 1 : score;
-    const newWrongs = !correct ? [...wrongIds, questions[currentIndex].id] : wrongIds;
-    saveProgress(currentIndex + 1, newScore, newWrongs);
-  }, [user, questions, currentIndex, combo, score, wrongIds, isRetry, saveProgress]);
+    // Save progress after each answer (only track original question progress, not retries)
+    if (!isRetry) {
+      const origCompleted = Math.min(currentIndex + 1, originalCount);
+      const newScore = correct ? score + 1 : score;
+      saveProgress(origCompleted, newScore, []);
+    }
+  }, [user, questions, currentIndex, combo, score, isRetry, saveProgress, originalCount]);
 
   const handleNext = async () => {
     playTap();
@@ -724,7 +726,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
 
   // Resume prompt
   if (showResume && savedProgress) {
-    const resumeIndex = savedProgress.current_index;
+    const resumeIndex = Math.min(savedProgress.current_index, originalCount);
     const resumeTotal = originalCount;
 
     return (
@@ -736,10 +738,11 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
 
         <button
           onClick={() => {
-            setCurrentIndex(savedProgress.current_index);
+            const safeIndex = Math.min(savedProgress.current_index, originalCount);
+            setCurrentIndex(safeIndex);
             setScore(savedProgress.score);
-            setWrongIds(JSON.parse(savedProgress.wrong_ids || "[]"));
-            setIsRetry(savedProgress.current_index >= originalCount);
+            setWrongIds([]);
+            setIsRetry(false);
             setShowResume(false);
           }}
           className="btn-3d-primary w-full max-w-xs text-lg mb-3"
