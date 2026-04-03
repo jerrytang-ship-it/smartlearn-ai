@@ -766,15 +766,21 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
         >
           {allOriginalDone || savedIdx >= questions.length ? "重新開始 ▶" : "繼續上次進度 ▶"}
         </button>
-        <button
-          onClick={async () => {
-            await clearProgress();
-            setShowResume(false);
-          }}
-          className="w-full max-w-xs py-3 rounded-2xl border-2 border-[#F0E8E0] text-[#A0907E] font-bold"
-        >
-          重新開始
-        </button>
+        {!(allOriginalDone || savedIdx >= questions.length) && (
+          <button
+            onClick={async () => {
+              setCurrentIndex(0);
+              setScore(0);
+              setWrongIds([]);
+              setIsRetry(false);
+              setShowResume(false);
+              await clearProgress();
+            }}
+            className="w-full max-w-xs py-3 rounded-2xl border-2 border-[#F0E8E0] text-[#A0907E] font-bold"
+          >
+            重新開始
+          </button>
+        )}
         <Link href="/" className="text-sm text-[#C4B5A5] mt-4 font-medium">
           返回課程
         </Link>
