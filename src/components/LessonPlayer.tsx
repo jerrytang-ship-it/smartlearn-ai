@@ -744,22 +744,27 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
         <p className="text-[#A0907E] mb-6">得分：{savedProgress.score}/{resumeTotal}</p>
 
         <button
-          onClick={() => {
-            // If all original questions were done, restart from 0 (they were in retry loop)
-            // Otherwise resume from where they left off
-            const safeIndex = allOriginalDone ? 0 : Math.min(savedIdx, originalCount - 1);
-            setCurrentIndex(safeIndex);
-            setScore(allOriginalDone ? 0 : savedProgress.score);
-            setWrongIds([]);
-            setIsRetry(false);
-            setShowResume(false);
-            if (allOriginalDone) {
-              clearProgress();
+          onClick={async () => {
+            if (allOriginalDone || savedIdx >= questions.length) {
+              // All done or index out of bounds — start fresh
+              setCurrentIndex(0);
+              setScore(0);
+              setWrongIds([]);
+              setIsRetry(false);
+              setShowResume(false);
+              await clearProgress();
+            } else {
+              // Resume from saved position
+              setCurrentIndex(savedIdx);
+              setScore(savedProgress.score);
+              setWrongIds([]);
+              setIsRetry(false);
+              setShowResume(false);
             }
           }}
           className="btn-3d-primary w-full max-w-xs text-lg mb-3"
         >
-          {allOriginalDone ? "重新開始 ▶" : "繼續上次進度 ▶"}
+          {allOriginalDone || savedIdx >= questions.length ? "重新開始 ▶" : "繼續上次進度 ▶"}
         </button>
         <button
           onClick={async () => {
