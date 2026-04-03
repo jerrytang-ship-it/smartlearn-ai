@@ -249,11 +249,22 @@ async function syncDailyChallenges(sheets: ReturnType<typeof google.sheets>) {
     return;
   }
 
+  // Normalize category values to match DB constraint
+  const categoryMap: Record<string, string> = {
+    "ai_in": "ai_in", "AI_in": "ai_in", "AI in": "ai_in", "ai in": "ai_in", "AI In": "ai_in",
+    "history": "history", "History": "history", "AI History 101": "history", "ai history 101": "history",
+    "who_am_i": "who_am_i", "Who Am I": "who_am_i", "who am i": "who_am_i", "Who_Am_I": "who_am_i",
+    "odd_one": "odd_one", "Odd One": "odd_one", "odd one": "odd_one", "Find the Odd One": "odd_one", "find the odd one": "odd_one",
+  };
+
   for (const row of rows) {
+    const rawCategory = (row.category || "").trim();
+    const normalizedCategory = categoryMap[rawCategory] || rawCategory.toLowerCase().replace(/\s+/g, "_");
+
     const challenge = {
       id: parseIntSafe(row.id),
       date: row.date,
-      category: row.category,
+      category: normalizedCategory,
       title_zh: row.title_zh,
       description_zh: row.description_zh || null,
     };

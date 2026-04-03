@@ -67,6 +67,21 @@ function FeedbackBox({ correct, explanation }: { correct: boolean; explanation: 
   );
 }
 
+// ─── Confirm Button ───
+
+function ConfirmButton({ show, onClick }: { show: boolean; onClick: () => void }) {
+  if (!show) return null;
+  return (
+    <button
+      onClick={onClick}
+      className="w-full py-3.5 rounded-[16px] font-extrabold text-white text-base transition-all active:translate-y-1 active:shadow-none animate-slide-up"
+      style={{ background: "linear-gradient(135deg, #FF6B35, #FF9A5C)", boxShadow: "0 4px 0 0 #E05520, 0 6px 16px rgba(255,107,53,0.3)" }}
+    >
+      確認 ✓
+    </button>
+  );
+}
+
 // ─── 1. Multiple Choice ───
 
 function MCQQuestion({
@@ -85,9 +100,13 @@ function MCQQuestion({
     if (answered) return;
     playTap();
     setSelected(optionId);
+  };
+
+  const handleConfirm = () => {
+    if (selected === null || answered) return;
     setAnswered(true);
-    const correct = question.options.find((o) => o.id === optionId)?.is_correct || false;
-    onAnswer(correct, optionId);
+    const correct = question.options.find((o) => o.id === selected)?.is_correct || false;
+    onAnswer(correct, selected);
   };
 
   return (
@@ -98,6 +117,7 @@ function MCQQuestion({
           let style = "option-btn";
           if (answered && option.is_correct) style = "option-btn option-btn-correct";
           else if (answered && option.id === selected && !option.is_correct) style = "option-btn option-btn-wrong";
+          else if (!answered && option.id === selected) style = "option-btn option-btn-selected";
 
           return (
             <button key={option.id} onClick={() => handleSelect(option.id)} className={style}>
@@ -105,6 +125,7 @@ function MCQQuestion({
                 <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-extrabold ${
                   answered && option.is_correct ? "border-success bg-success text-white"
                     : answered && option.id === selected ? "border-accent bg-accent text-white"
+                    : option.id === selected ? "border-[#FF6B35] text-[#FF6B35]"
                     : "border-[#F0E8E0] text-[#C4B5A5]"
                 }`}>
                   {answered && option.is_correct ? "✓" : answered && option.id === selected ? "✗" : String.fromCharCode(65 + idx)}
@@ -115,6 +136,7 @@ function MCQQuestion({
           );
         })}
       </div>
+      <ConfirmButton show={selected !== null && !answered} onClick={handleConfirm} />
       {answered && <FeedbackBox correct={!!isCorrect} explanation={question.explanation} />}
     </div>
   );
@@ -142,10 +164,13 @@ function TrueFalseQuestion({
 
   const handleSelect = (val: boolean) => {
     if (answered) return;
-    const label = val ? "正確" : "錯誤";
-    setSelected(label);
+    setSelected(val ? "正確" : "錯誤");
+  };
+
+  const handleConfirm = () => {
+    if (selected === null || answered) return;
     setAnswered(true);
-    const correct = val === correctValue;
+    const correct = (selected === "正確") === correctValue;
     const optionId = correctOption?.id || -1;
     onAnswer(correct, correct ? optionId : -1);
   };
@@ -157,21 +182,25 @@ function TrueFalseQuestion({
       <p className="text-lg font-bold leading-relaxed">{question.prompt}</p>
       <div className="flex gap-4">
         {[true, false].map((val) => {
+          const label = val ? "正確" : "錯誤";
           const isThisCorrect = val === correctValue;
           let style = "flex-1 p-6 rounded-2xl text-center border-2 border-[#F0E8E0] bg-white shadow-[0_4px_0_0_#F0E8E0] active:translate-y-1 active:shadow-none transition-all";
           if (answered && isThisCorrect) {
             style = "flex-1 p-6 rounded-2xl text-center border-2 border-success bg-success/10 shadow-[0_4px_0_0_#04B386]";
-          } else if (answered && !isThisCorrect && selected === (val ? "正確" : "錯誤")) {
+          } else if (answered && !isThisCorrect && selected === label) {
             style = "flex-1 p-6 rounded-2xl text-center border-2 border-accent bg-accent/10 shadow-[0_4px_0_0_#D01070]";
+          } else if (!answered && selected === label) {
+            style = "flex-1 p-6 rounded-2xl text-center border-2 border-[#FF6B35] bg-[#FFF3EC] shadow-[0_4px_0_0_#FF6B35]";
           }
           return (
             <button key={val.toString()} onClick={() => handleSelect(val)} className={style}>
               <span className="text-4xl block mb-2">{val ? "⭕" : "❌"}</span>
-              <span className="font-extrabold text-lg">{val ? "正確" : "錯誤"}</span>
+              <span className="font-extrabold text-lg">{label}</span>
             </button>
           );
         })}
       </div>
+      <ConfirmButton show={selected !== null && !answered} onClick={handleConfirm} />
       {answered && <FeedbackBox correct={isCorrect} explanation={question.explanation} />}
     </div>
   );
@@ -197,9 +226,13 @@ function FillBlankQuestion({
     if (answered) return;
     playTap();
     setSelected(optionId);
+  };
+
+  const handleConfirm = () => {
+    if (selected === null || answered) return;
     setAnswered(true);
-    const correct = question.options.find((o) => o.id === optionId)?.is_correct || false;
-    onAnswer(correct, optionId);
+    const correct = question.options.find((o) => o.id === selected)?.is_correct || false;
+    onAnswer(correct, selected);
   };
 
   // Split prompt at ___ to show the blank
@@ -234,6 +267,8 @@ function FillBlankQuestion({
             style = "p-3 rounded-2xl text-center border-2 border-success bg-success/10 shadow-[0_3px_0_0_#04B386] font-bold text-success";
           } else if (answered && option.id === selected && !option.is_correct) {
             style = "p-3 rounded-2xl text-center border-2 border-accent bg-accent/10 shadow-[0_3px_0_0_#D01070] font-bold text-accent line-through";
+          } else if (!answered && option.id === selected) {
+            style = "p-3 rounded-2xl text-center border-2 border-[#FF6B35] bg-[#FFF3EC] shadow-[0_3px_0_0_#FF6B35] font-bold text-[#FF6B35]";
           }
 
           return (
@@ -244,6 +279,7 @@ function FillBlankQuestion({
         })}
       </div>
 
+      <ConfirmButton show={selected !== null && !answered} onClick={handleConfirm} />
       {answered && <FeedbackBox correct={!!isCorrect} explanation={question.explanation} />}
     </div>
   );
@@ -251,7 +287,7 @@ function FillBlankQuestion({
 
 // ─── 4. Ordering ───
 // Options are items to arrange. sort_order = correct position.
-// User taps items to build the sequence.
+// User taps items to place them into numbered slots.
 
 function OrderingQuestion({
   question,
@@ -268,23 +304,25 @@ function OrderingQuestion({
 
   const remaining = shuffled.filter((o) => !selectedOrder.includes(o.id));
   const correctOrder = [...question.options].sort((a, b) => a.sort_order - b.sort_order).map((o) => o.id);
+  const totalSlots = question.options.length;
+  const allPlaced = selectedOrder.length === totalSlots;
 
   const handleTap = (optionId: number) => {
     if (answered) return;
-    const newOrder = [...selectedOrder, optionId];
-    setSelectedOrder(newOrder);
-
-    // Auto-submit when all items placed
-    if (newOrder.length === question.options.length) {
-      setAnswered(true);
-      const isCorrect = newOrder.every((id, i) => id === correctOrder[i]);
-      onAnswer(isCorrect, -1);
-    }
+    playTap();
+    setSelectedOrder((prev) => [...prev, optionId]);
   };
 
-  const handleUndo = () => {
-    if (answered || selectedOrder.length === 0) return;
-    setSelectedOrder((prev) => prev.slice(0, -1));
+  const handleRemove = (idx: number) => {
+    if (answered) return;
+    setSelectedOrder((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleConfirm = () => {
+    if (!allPlaced || answered) return;
+    setAnswered(true);
+    const isCorrect = selectedOrder.every((id, i) => id === correctOrder[i]);
+    onAnswer(isCorrect, -1);
   };
 
   const getOptionById = (id: number) => question.options.find((o) => o.id === id);
@@ -293,52 +331,73 @@ function OrderingQuestion({
     <div className="space-y-4">
       <p className="text-lg font-bold leading-relaxed">{question.prompt}</p>
 
-      {/* Placed items */}
-      <div className="bg-white rounded-2xl p-4 border-2 border-[#F0E8E0] min-h-[60px]">
-        {selectedOrder.length === 0 ? (
-          <p className="text-[#C4B5A5] text-sm text-center py-2">點擊下方選項排列正確順序</p>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {selectedOrder.map((id, idx) => {
-              const opt = getOptionById(id);
-              let style = "px-4 py-2 rounded-xl border-2 font-bold text-sm";
-              if (!answered) {
-                style += " border-primary bg-primary/10 text-primary-dark";
-              } else if (id === correctOrder[idx]) {
-                style += " border-success bg-success/10 text-success";
-              } else {
-                style += " border-accent bg-accent/10 text-accent";
-              }
-              return (
-                <div key={id} className={style}>
-                  <span className="text-xs opacity-60 mr-1">{idx + 1}.</span>
-                  {opt?.option_text}
+      {/* Numbered slots */}
+      <div className="space-y-2">
+        {Array.from({ length: totalSlots }).map((_, idx) => {
+          const placedId = selectedOrder[idx];
+          const opt = placedId !== undefined ? getOptionById(placedId) : null;
+          const isCorrectSlot = answered && placedId === correctOrder[idx];
+          const isWrongSlot = answered && placedId !== undefined && placedId !== correctOrder[idx];
+
+          return (
+            <div
+              key={idx}
+              className={`flex items-center gap-3 p-3 rounded-[16px] border-2 transition-all min-h-[52px] ${
+                isCorrectSlot
+                  ? "border-success bg-success/10"
+                  : isWrongSlot
+                  ? "border-accent bg-accent/10"
+                  : opt
+                  ? "border-[#FF6B35] bg-[#FFF3EC]"
+                  : "border-dashed border-[#F0E8E0] bg-white"
+              }`}
+            >
+              {/* Number badge */}
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-extrabold flex-shrink-0 ${
+                isCorrectSlot
+                  ? "bg-success text-white"
+                  : isWrongSlot
+                  ? "bg-accent text-white"
+                  : opt
+                  ? "bg-[#FF6B35] text-white"
+                  : "bg-[#F0E8E0] text-[#C4B5A5]"
+              }`}>
+                {isCorrectSlot ? "✓" : isWrongSlot ? "✗" : idx + 1}
+              </div>
+
+              {opt ? (
+                <div className="flex-1 flex items-center justify-between">
+                  <span className={`font-bold text-sm ${
+                    isCorrectSlot ? "text-success" : isWrongSlot ? "text-accent" : "text-[#2D2D2D]"
+                  }`}>{opt.option_text}</span>
+                  {!answered && (
+                    <button onClick={() => handleRemove(idx)} className="text-[#C4B5A5] text-xs ml-2">✕</button>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        )}
-        {!answered && selectedOrder.length > 0 && (
-          <button onClick={handleUndo} className="text-xs text-[#C4B5A5] mt-2 hover:text-[#A0907E]">
-            ← 撤銷上一個
-          </button>
-        )}
+              ) : (
+                <span className="text-sm text-[#C4B5A5]">點擊下方選項</span>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Remaining choices */}
-      {!answered && (
+      {!answered && remaining.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {remaining.map((option) => (
             <button
               key={option.id}
               onClick={() => handleTap(option.id)}
-              className="px-4 py-2 rounded-xl border-2 border-[#F0E8E0] bg-white shadow-[0_3px_0_0_#F0E8E0] active:translate-y-0.5 active:shadow-none transition-all font-bold text-sm"
+              className="px-4 py-2.5 rounded-[14px] border-2 border-[#F0E8E0] bg-white shadow-[0_3px_0_0_#F0E8E0] active:translate-y-0.5 active:shadow-none transition-all font-bold text-sm"
             >
               {option.option_text}
             </button>
           ))}
         </div>
       )}
+
+      <ConfirmButton show={allPlaced && !answered} onClick={handleConfirm} />
 
       {/* Show correct order if wrong */}
       {answered && !selectedOrder.every((id, i) => id === correctOrder[i]) && (
@@ -365,7 +424,7 @@ function OrderingQuestion({
 
 // ─── 5. Match Pairs ───
 // Options stored as "term|definition" in option_text.
-// User taps one from left, then one from right to make pairs.
+// Slot-based UI: left term is fixed, right side is a slot to fill.
 
 function MatchQuestion({
   question,
@@ -374,7 +433,6 @@ function MatchQuestion({
   question: Question;
   onAnswer: (correct: boolean, optionId: number) => void;
 }) {
-  // Parse "term|definition" pairs
   const pairs = question.options.map((o) => {
     const [left, right] = o.option_text.split("|").map((s) => s.trim());
     return { id: o.id, left, right };
@@ -384,100 +442,163 @@ function MatchQuestion({
     [...pairs].sort(() => Math.random() - 0.5).map((p) => ({ id: p.id, text: p.right }))
   );
 
-  const [selectedLeft, setSelectedLeft] = useState<number | null>(null);
-  const [matched, setMatched] = useState<Map<number, { rightId: number; correct: boolean }>>(new Map());
+  // assignments[pairId] = rightId
+  const [assignments, setAssignments] = useState<Map<number, number>>(new Map());
+  const [activePairId, setActivePairId] = useState<number | null>(pairs[0]?.id || null);
   const [answered, setAnswered] = useState(false);
 
-  const handleLeftTap = (pairId: number) => {
-    if (answered || matched.has(pairId)) return;
-    setSelectedLeft(pairId);
+  const assignedRightIds = new Set(Array.from(assignments.values()));
+  const allAssigned = assignments.size === pairs.length;
+  const remainingRight = shuffledRight.filter((r) => !assignedRightIds.has(r.id));
+
+  const handleSlotTap = (pairId: number) => {
+    if (answered) return;
+    playTap();
+    // If already assigned, remove it
+    if (assignments.has(pairId)) {
+      setAssignments((prev) => {
+        const next = new Map(prev);
+        next.delete(pairId);
+        return next;
+      });
+      setActivePairId(null);
+      return;
+    }
+    setActivePairId(pairId);
   };
 
   const handleRightTap = (rightItem: { id: number; text: string }) => {
-    if (answered || selectedLeft === null) return;
+    if (answered || activePairId === null) return;
+    if (assignedRightIds.has(rightItem.id)) return;
+    playTap();
 
-    // Check if this right item is already matched
-    const alreadyMatched = Array.from(matched.values()).some((m) => m.rightId === rightItem.id);
-    if (alreadyMatched) return;
+    const newAssignments = new Map(assignments);
+    newAssignments.set(activePairId, rightItem.id);
+    setAssignments(newAssignments);
 
-    const isCorrect = selectedLeft === rightItem.id;
-    const newMatched = new Map(matched);
-    newMatched.set(selectedLeft, { rightId: rightItem.id, correct: isCorrect });
-    setMatched(newMatched);
-    setSelectedLeft(null);
-
-    // Auto-submit when all matched
-    if (newMatched.size === pairs.length) {
-      setAnswered(true);
-      const allCorrect = Array.from(newMatched.values()).every((m) => m.correct);
-      onAnswer(allCorrect, -1);
-    }
+    // Auto-select next unassigned pair
+    const nextPair = pairs.find((p) => !newAssignments.has(p.id));
+    setActivePairId(nextPair?.id || null);
   };
 
-  const allCorrect = Array.from(matched.values()).every((m) => m.correct);
-  const matchedRightIds = new Set(Array.from(matched.values()).map((m) => m.rightId));
+  const handleConfirm = () => {
+    if (!allAssigned || answered) return;
+    setAnswered(true);
+    const allCorrect = pairs.every((p) => assignments.get(p.id) === p.id);
+    onAnswer(allCorrect, -1);
+  };
+
+  const getRightTextById = (id: number) => shuffledRight.find((r) => r.id === id)?.text || "";
+  const allCorrect = answered && pairs.every((p) => assignments.get(p.id) === p.id);
 
   return (
     <div className="space-y-4">
       <p className="text-lg font-bold leading-relaxed">{question.prompt}</p>
 
-      <div className="grid grid-cols-2 gap-3">
-        {/* Left column */}
-        <div className="space-y-2">
-          {pairs.map((pair) => {
-            const m = matched.get(pair.id);
-            let style = "w-full p-3 rounded-xl border-2 text-left font-medium text-sm transition-all ";
-            if (m?.correct) {
-              style += "border-success bg-success/10 text-success";
-            } else if (m && !m.correct) {
-              style += "border-accent bg-accent/10 text-accent";
-            } else if (selectedLeft === pair.id) {
-              style += "border-primary bg-primary/10 text-primary-dark ring-2 ring-primary/30";
-            } else if (matched.has(pair.id)) {
-              style += "border-[#F0E8E0] bg-white text-[#C4B5A5]";
-            } else {
-              style += "border-[#F0E8E0] bg-white shadow-[0_3px_0_0_#F0E8E0] active:translate-y-0.5 active:shadow-none";
-            }
-            return (
-              <button key={pair.id} onClick={() => handleLeftTap(pair.id)} className={style}>
+      {/* Match slots */}
+      <div className="space-y-2">
+        {pairs.map((pair) => {
+          const assignedId = assignments.get(pair.id);
+          const hasAssignment = assignedId !== undefined;
+          const isActive = activePairId === pair.id;
+          const isCorrectMatch = answered && assignedId === pair.id;
+          const isWrongMatch = answered && hasAssignment && assignedId !== pair.id;
+
+          return (
+            <div
+              key={pair.id}
+              onClick={() => handleSlotTap(pair.id)}
+              className={`flex items-center gap-3 p-3 rounded-[16px] border-2 transition-all cursor-pointer ${
+                isCorrectMatch
+                  ? "border-success bg-success/10"
+                  : isWrongMatch
+                  ? "border-accent bg-accent/10"
+                  : isActive
+                  ? "border-[#FF6B35] bg-[#FFF3EC] ring-2 ring-[#FF6B35]/30"
+                  : hasAssignment
+                  ? "border-[#FF6B35] bg-[#FFF3EC]"
+                  : "border-[#F0E8E0] bg-white"
+              }`}
+            >
+              {/* Left term (fixed) */}
+              <div className={`flex-1 font-bold text-sm ${
+                isCorrectMatch ? "text-success" : isWrongMatch ? "text-accent" : "text-[#2D2D2D]"
+              }`}>
                 {pair.left}
-              </button>
-            );
-          })}
-        </div>
+              </div>
 
-        {/* Right column */}
-        <div className="space-y-2">
-          {shuffledRight.map((item) => {
-            const isMatched = matchedRightIds.has(item.id);
-            const matchEntry = Array.from(matched.entries()).find(([, v]) => v.rightId === item.id);
-            const isCorrectMatch = matchEntry ? matchEntry[1].correct : false;
+              {/* Arrow */}
+              <span className="text-[#C4B5A5] text-xs">→</span>
 
-            let style = "w-full p-3 rounded-xl border-2 text-left font-medium text-sm transition-all ";
-            if (isMatched && isCorrectMatch) {
-              style += "border-success bg-success/10 text-success";
-            } else if (isMatched && !isCorrectMatch) {
-              style += "border-accent bg-accent/10 text-accent";
-            } else if (isMatched) {
-              style += "border-[#F0E8E0] bg-white text-[#C4B5A5]";
-            } else {
-              style += "border-[#F0E8E0] bg-white shadow-[0_3px_0_0_#F0E8E0] active:translate-y-0.5 active:shadow-none";
-            }
-            return (
-              <button key={item.id} onClick={() => handleRightTap(item)} className={style}>
-                {item.text}
-              </button>
-            );
-          })}
-        </div>
+              {/* Right slot */}
+              <div className={`flex-1 text-right ${hasAssignment ? "" : "min-h-[24px]"}`}>
+                {hasAssignment ? (
+                  <div className="flex items-center justify-end gap-1">
+                    <span className={`font-bold text-sm ${
+                      isCorrectMatch ? "text-success"
+                        : isWrongMatch ? "text-accent"
+                        : "text-[#FF6B35]"
+                    }`}>
+                      {getRightTextById(assignedId)}
+                    </span>
+                    {!answered && (
+                      <span className="text-[#C4B5A5] text-xs">✕</span>
+                    )}
+                    {isCorrectMatch && <span className="text-success text-xs">✓</span>}
+                    {isWrongMatch && <span className="text-accent text-xs">✗</span>}
+                  </div>
+                ) : (
+                  <span className={`text-sm ${isActive ? "text-[#FF6B35] font-bold" : "text-[#C4B5A5]"}`}>
+                    {isActive ? "選擇 ↓" : "點擊配對"}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {!answered && selectedLeft !== null && (
-        <p className="text-xs text-center text-primary font-bold animate-pulse">
-          現在點擊右邊配對的選項
+      {/* Available right options */}
+      {!answered && remainingRight.length > 0 && activePairId !== null && (
+        <div className="space-y-1">
+          <p className="text-xs font-bold text-[#A0907E] mb-2">選擇配對：</p>
+          <div className="flex flex-wrap gap-2">
+            {remainingRight.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleRightTap(item)}
+                className="px-4 py-2.5 rounded-[14px] border-2 border-[#F0E8E0] bg-white shadow-[0_3px_0_0_#F0E8E0] active:translate-y-0.5 active:shadow-none transition-all font-bold text-sm"
+              >
+                {item.text}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!answered && activePairId === null && !allAssigned && assignments.size > 0 && (
+        <p className="text-xs text-center text-[#A0907E] font-medium">
+          點擊左邊選項繼續配對
         </p>
       )}
 
+      {/* Show correct answers if wrong */}
+      {answered && !allCorrect && (
+        <div className="bg-[#FF6B35]/5 rounded-2xl p-4 border-2 border-[#FF6B35]/10">
+          <p className="text-xs font-bold text-[#FF6B35] mb-2">正確配對：</p>
+          <div className="space-y-1">
+            {pairs.map((p) => (
+              <p key={p.id} className="text-sm text-[#2D2D2D]">
+                <span className="font-bold">{p.left}</span>
+                <span className="text-[#C4B5A5] mx-2">→</span>
+                <span className="font-bold text-success">{p.right}</span>
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <ConfirmButton show={allAssigned && !answered} onClick={handleConfirm} />
       {answered && <FeedbackBox correct={allCorrect} explanation={question.explanation} />}
     </div>
   );
@@ -485,7 +606,7 @@ function MatchQuestion({
 
 // ─── Completion Screen ───
 
-function CompletionScreen({ score, total, wrongIds, isReview }: { score: number; total: number; wrongIds: number[]; isReview?: boolean }) {
+function CompletionScreen({ score, total, wrongIds, isReview, unitId }: { score: number; total: number; wrongIds: number[]; isReview?: boolean; unitId?: number }) {
   const percentage = Math.round((score / total) * 100);
   const xpEarned = isReview ? score * 5 : score * 15;
   const passed = percentage >= 60;
@@ -527,8 +648,8 @@ function CompletionScreen({ score, total, wrongIds, isReview }: { score: number;
         </Link>
       )}
 
-      <Link href="/" className="btn-3d-primary w-full max-w-xs text-center text-lg">
-        返回地圖
+      <Link href={unitId ? `/?unit=${unitId}` : "/"} className="btn-3d-primary w-full max-w-xs text-center text-lg">
+        繼續
       </Link>
     </div>
   );
@@ -540,6 +661,8 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   const { user, refreshStats } = useUser();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
+  const [alreadyCompleted, setAlreadyCompleted] = useState(false);
+  const [unitId, setUnitId] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [showNext, setShowNext] = useState(false);
@@ -551,20 +674,28 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   const [originalCount, setOriginalCount] = useState(0);
   const [isRetry, setIsRetry] = useState(false);
   const [showResume, setShowResume] = useState(false);
-  const [savedProgress, setSavedProgress] = useState<{ current_index: number; score: number; wrong_ids: string } | null>(null);
+  const [savedProgress, setSavedProgress] = useState<{
+    current_index: number; score: number; original_count: number;
+    question_order: string; xp_earned_ids: string;
+  } | null>(null);
+  const [xpEarnedIds, setXpEarnedIds] = useState<number[]>([]); // track which question IDs already earned XP
 
-  // Save progress to Supabase
-  const saveProgress = useCallback(async (idx: number, sc: number, wrongs: number[]) => {
+  // Save full progress to Supabase
+  const saveProgress = useCallback(async (
+    idx: number, sc: number, qOrder: number[], earnedIds: number[]
+  ) => {
     if (!user || !chapterId || isReview) return;
     await supabase.from("quiz_progress").upsert({
       user_id: user.id,
       chapter_id: chapterId,
       current_index: idx,
       score: sc,
-      wrong_ids: JSON.stringify(wrongs),
+      original_count: originalCount,
+      question_order: JSON.stringify(qOrder),
+      xp_earned_ids: JSON.stringify(earnedIds),
       updated_at: new Date().toISOString(),
     }, { onConflict: "user_id,chapter_id" });
-  }, [user, chapterId, isReview]);
+  }, [user, chapterId, isReview, originalCount]);
 
   // Delete progress on completion
   const clearProgress = useCallback(async () => {
@@ -616,8 +747,30 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
         setQuestions(mapped);
         setOriginalCount(mapped.length);
 
-        // Check for saved progress (only for chapter quizzes, not reviews)
+        // Get unit_id for navigation after completion
+        if (chapterId) {
+          const { data: chapterData } = await supabase
+            .from("chapters")
+            .select("unit_id")
+            .eq("id", chapterId)
+            .single();
+          if (chapterData) setUnitId(chapterData.unit_id);
+        }
+
         if (user && chapterId && !isReview) {
+          // Check if chapter already completed
+          const { data: chapterProgress } = await supabase
+            .from("user_progress")
+            .select("status")
+            .eq("user_id", user.id)
+            .eq("chapter_id", chapterId)
+            .single();
+
+          if (chapterProgress?.status === "complete") {
+            setAlreadyCompleted(true);
+          }
+
+          // Check for saved quiz progress
           const { data: progress } = await supabase
             .from("quiz_progress")
             .select("*")
@@ -638,11 +791,19 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   }, [chapterId, user, isReview]);
 
   const handleAnswer = useCallback(async (correct: boolean, optionId: number) => {
+    const qId = questions[currentIndex].id;
+    const alreadyEarnedXP = xpEarnedIds.includes(qId);
+    const shouldEarnXP = correct && !isRetry && !alreadyEarnedXP && !alreadyCompleted;
+
     if (correct) {
       const newCombo = combo + 1;
       if (!isRetry) {
         setScore((s) => s + 1);
-        setXpTrigger((t) => t + 1); // XP animation only on first attempt
+      }
+      if (shouldEarnXP) {
+        setXpTrigger((t) => t + 1);
+        playXP();
+        setXpEarnedIds((prev) => [...prev, qId]);
       }
       setCombo(newCombo);
       setShowCombo(true);
@@ -651,12 +812,10 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
       } else {
         playCorrect();
       }
-      playXP();
     } else {
       setCombo(0);
       setShowCombo(false);
-      setWrongIds((prev) => [...prev, questions[currentIndex].id]);
-      // Append this question to the end for retry
+      setWrongIds((prev) => [...prev, qId]);
       setQuestions((prev) => [...prev, prev[currentIndex]]);
       playWrong();
     }
@@ -665,24 +824,30 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
     if (user && questions[currentIndex]) {
       await supabase.from("user_answers").insert({
         user_id: user.id,
-        question_id: questions[currentIndex].id,
+        question_id: qId,
         selected_option_id: optionId > 0 ? optionId : null,
         is_correct: correct,
       });
 
-      await supabase.rpc("record_answer", {
-        p_user_id: user.id,
-        p_is_correct: correct,
-      });
+      // Only update DB stats if XP was earned
+      if (shouldEarnXP) {
+        await supabase.rpc("record_answer", {
+          p_user_id: user.id,
+          p_is_correct: true,
+        });
+      }
     }
 
-    // Save progress after each answer (only track original question progress, not retries)
-    if (!isRetry) {
-      const origCompleted = Math.min(currentIndex + 1, originalCount);
-      const newScore = correct ? score + 1 : score;
-      saveProgress(origCompleted, newScore, []);
-    }
-  }, [user, questions, currentIndex, combo, score, isRetry, saveProgress, originalCount]);
+    // Save full progress after each answer
+    const newScore = correct && !isRetry ? score + 1 : score;
+    const newEarnedIds = shouldEarnXP
+      ? [...xpEarnedIds, qId]
+      : [...xpEarnedIds];
+    const questionOrder = questions.map((q) => q.id);
+    // If wrong, append the retry
+    if (!correct) questionOrder.push(qId);
+    saveProgress(currentIndex + 1, newScore, questionOrder, newEarnedIds);
+  }, [user, questions, currentIndex, combo, score, isRetry, saveProgress, originalCount, xpEarnedIds, alreadyCompleted]);
 
   const handleNext = async () => {
     playTap();
@@ -719,7 +884,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6">
         <MascotBubble message="這個章節暫時還沒有題目，快回去看看其他章節吧！" mood="thinking" mascotSize={64} />
-        <Link href="/" className="btn-3d-primary mt-6 text-center">返回地圖</Link>
+        <Link href="/" className="btn-3d-primary mt-6 text-center">返回</Link>
       </div>
     );
   }
@@ -727,52 +892,61 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   // Resume prompt
   if (showResume && savedProgress) {
     const savedIdx = savedProgress.current_index;
-    const allOriginalDone = savedIdx >= originalCount;
-    const displayIndex = Math.min(savedIdx, originalCount);
-    const resumeTotal = originalCount;
+    const savedQOrder: number[] = JSON.parse(savedProgress.question_order || "[]");
+    const savedEarnedIds: number[] = JSON.parse(savedProgress.xp_earned_ids || "[]");
+    const savedOrigCount = savedProgress.original_count || originalCount;
+    const canResume = savedIdx < savedQOrder.length && savedQOrder.length > 0;
 
     return (
       <div className="min-h-screen bg-[#FFF8F0] flex flex-col items-center justify-center px-6 text-center">
         <Mascot size={100} mood="waving" />
         <h2 className="text-xl font-extrabold text-[#2D2D2D] mt-4 mb-2">歡迎返嚟！</h2>
         <p className="text-[#A0907E] mb-1">
-          {allOriginalDone
-            ? `你已完成所有 ${resumeTotal} 題`
-            : `你上次做到第 ${displayIndex}/${resumeTotal} 題`
+          {canResume
+            ? `你上次做到第 ${Math.min(savedIdx, savedOrigCount)}/${savedOrigCount} 題`
+            : `你已完成所有 ${savedOrigCount} 題`
           }
         </p>
-        <p className="text-[#A0907E] mb-6">得分：{savedProgress.score}/{resumeTotal}</p>
+        <p className="text-[#A0907E] mb-6">得分：{savedProgress.score}/{savedOrigCount}</p>
 
         <button
           onClick={async () => {
-            if (allOriginalDone || savedIdx >= questions.length) {
-              // All done or index out of bounds — start fresh
-              setCurrentIndex(0);
-              setScore(0);
-              setWrongIds([]);
-              setIsRetry(false);
-              setShowResume(false);
-              await clearProgress();
-            } else {
-              // Resume from saved position
-              setCurrentIndex(savedIdx);
-              setScore(savedProgress.score);
-              setWrongIds([]);
-              setIsRetry(false);
-              setShowResume(false);
+            if (canResume) {
+              // Rebuild the question list from saved order
+              const allQuestions = questions;
+              const qMap = new Map(allQuestions.map((q) => [q.id, q]));
+              const rebuiltQuestions = savedQOrder
+                .map((id) => qMap.get(id))
+                .filter(Boolean) as Question[];
+
+              if (rebuiltQuestions.length > 0 && savedIdx < rebuiltQuestions.length) {
+                setQuestions(rebuiltQuestions);
+                setCurrentIndex(savedIdx);
+                setScore(savedProgress.score);
+                setOriginalCount(savedOrigCount);
+                setIsRetry(savedIdx >= savedOrigCount);
+                setXpEarnedIds(savedEarnedIds);
+                setShowResume(false);
+                return;
+              }
             }
+            // Fallback: start fresh
+            setCurrentIndex(0);
+            setScore(0);
+            setXpEarnedIds([]);
+            setShowResume(false);
+            await clearProgress();
           }}
           className="btn-3d-primary w-full max-w-xs text-lg mb-3"
         >
-          {allOriginalDone || savedIdx >= questions.length ? "重新開始 ▶" : "繼續上次進度 ▶"}
+          {canResume ? "繼續上次進度 ▶" : "重新開始 ▶"}
         </button>
-        {!(allOriginalDone || savedIdx >= questions.length) && (
+        {canResume && alreadyCompleted && (
           <button
             onClick={async () => {
               setCurrentIndex(0);
               setScore(0);
-              setWrongIds([]);
-              setIsRetry(false);
+              setXpEarnedIds([]);
               setShowResume(false);
               await clearProgress();
             }}
@@ -789,7 +963,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   }
 
   if (completed) {
-    return <CompletionScreen score={score} total={originalCount} wrongIds={[]} isReview={isReview} />;
+    return <CompletionScreen score={score} total={originalCount} wrongIds={[]} isReview={isReview} unitId={unitId || undefined} />;
   }
 
   const question = questions[currentIndex];
@@ -813,14 +987,17 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   };
 
   const xpPerQuestion = 15;
+  const showXP = !alreadyCompleted && !isReview;
+  const displayQuestionNum = Math.min(currentIndex + 1, originalCount);
+  const isInRetrySection = currentIndex >= originalCount;
 
   return (
     <div className="min-h-screen bg-[#FFF8F0]">
-      {/* XP fly animation */}
-      <XPAnimation xp={xpPerQuestion} trigger={xpTrigger} combo={combo} />
+      {/* XP fly animation — only on first playthrough */}
+      {showXP && <XPAnimation xp={xpPerQuestion} trigger={xpTrigger} combo={combo} />}
 
       <div className="sticky top-0 bg-[#FFF8F0] z-40 px-4 pt-4 pb-3 border-b-2 border-[#F0E8E0]">
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex items-center gap-3 mb-1">
           <Link href="/" className="text-[#C4B5A5] hover:text-[#A0907E] active:scale-90 transition-all">
             <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -829,11 +1006,20 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
           <div className="flex-1">
             <ProgressBar current={currentIndex} total={questions.length} />
           </div>
-          <div className="flex items-center gap-1 bg-xp/20 px-2 py-1 rounded-full">
-            <span className="text-sm">⚡</span>
-            <span className="text-xs font-extrabold text-xp-dark">{score * xpPerQuestion}</span>
-          </div>
+          {showXP && (
+            <div className="flex items-center gap-1 bg-xp/20 px-2 py-1 rounded-full">
+              <span className="text-sm">⚡</span>
+              <span className="text-xs font-extrabold text-xp-dark">{score * xpPerQuestion}</span>
+            </div>
+          )}
         </div>
+        {/* Question counter */}
+        <p className="text-center text-xs font-bold text-[#A0907E]">
+          {isInRetrySection
+            ? "🔄 重做錯題"
+            : `第 ${displayQuestionNum} / ${originalCount} 題`
+          }
+        </p>
       </div>
 
       <div className="p-4 max-w-lg mx-auto animate-slide-up" key={`q-${currentIndex}`}>
