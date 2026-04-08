@@ -27,7 +27,7 @@ export default function LearnTab() {
           </button>
           <button
             onClick={() => setActiveTab("daily")}
-            className={`flex-1 py-2.5 rounded-[14px] text-sm font-extrabold transition-all ${
+            className={`flex-1 py-2.5 rounded-[14px] text-sm font-extrabold transition-all relative ${
               activeTab === "daily"
                 ? "text-white"
                 : "text-[#FF6B35]/60"
@@ -35,6 +35,14 @@ export default function LearnTab() {
             style={activeTab === "daily" ? { background: "#FF6B35", boxShadow: "0 3px 12px rgba(255,107,53,0.4)" } : {}}
           >
             ⚡ 每日挑戰
+            {activeTab !== "daily" && (
+              <span className="absolute -top-1 -right-1 flex h-5 w-5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center text-white text-[9px] font-extrabold">
+                  NEW
+                </span>
+              </span>
+            )}
           </button>
         </div>
       </div>
