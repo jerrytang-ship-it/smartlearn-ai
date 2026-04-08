@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 
 interface XPAnimationProps {
   xp: number;
-  trigger: number; // increment this to trigger a new animation
-  combo: number;
+  trigger: number;
 }
 
 interface FlyingXP {
@@ -15,39 +14,28 @@ interface FlyingXP {
   bonus: boolean;
 }
 
-export default function XPAnimation({ xp, trigger, combo }: XPAnimationProps) {
+export default function XPAnimation({ xp, trigger }: XPAnimationProps) {
   const [particles, setParticles] = useState<FlyingXP[]>([]);
 
   useEffect(() => {
     if (trigger === 0) return;
 
-    const bonusXP = combo >= 3 ? Math.floor(xp * 0.5) : 0;
     const id = Date.now();
 
-    // Main XP particle
     const newParticles: FlyingXP[] = [
       { id, xp, x: 40 + Math.random() * 20, bonus: false },
     ];
 
-    // Bonus XP particle for combos
-    if (bonusXP > 0) {
-      newParticles.push({
-        id: id + 1,
-        xp: bonusXP,
-        x: 50 + Math.random() * 20,
-        bonus: true,
-      });
-    }
-
     setParticles((prev) => [...prev, ...newParticles]);
 
-    // Clean up after animation
     const t = setTimeout(() => {
-      setParticles((prev) => prev.filter((p) => p.id !== id && p.id !== id + 1));
+      setParticles((prev) => prev.filter((p) => p.id !== id));
     }, 2000);
 
     return () => clearTimeout(t);
-  }, [trigger, xp, combo]);
+  // ONLY trigger on `trigger` changes — not combo or xp
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trigger]);
 
   if (particles.length === 0) return null;
 

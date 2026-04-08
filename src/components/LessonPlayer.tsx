@@ -606,9 +606,9 @@ function MatchQuestion({
 
 // ─── Completion Screen ───
 
-function CompletionScreen({ score, total, wrongIds, isReview, unitId }: { score: number; total: number; wrongIds: number[]; isReview?: boolean; unitId?: number }) {
+function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice }: { score: number; total: number; wrongIds: number[]; isReview?: boolean; unitId?: number; isPractice?: boolean }) {
   const percentage = Math.round((score / total) * 100);
-  const xpEarned = isReview ? score * 5 : score * 15;
+  const xpEarned = score * 15;
   const passed = percentage >= 60;
 
   return (
@@ -617,15 +617,22 @@ function CompletionScreen({ score, total, wrongIds, isReview, unitId }: { score:
         <Mascot size={120} mood={passed ? "celebrating" : "encouraging"} />
       </div>
       <h2 className="text-3xl font-extrabold mb-1 animate-slide-up">
-        {isReview
-          ? (passed ? "複習得好！🎉" : "再多練習！💪")
+        {isPractice || isReview
+          ? "✅ 練習完成！做得好！"
           : (passed ? "太棒了！🎉" : "繼續加油！💪")}
       </h2>
       <p className="text-[#A0907E] mb-6 font-medium">你答對了 {score}/{total} 題</p>
-      <div className="bg-xp/20 border-2 border-xp rounded-3xl p-6 mb-6 w-full max-w-xs shadow-[0_4px_0_0_#F5B800] animate-bounce-in">
-        <p className="text-4xl font-extrabold text-xp-dark">+{xpEarned} XP</p>
-        <p className="text-sm text-xp-dark/70 font-bold mt-1">{isReview ? "複習獎勵！" : "經驗值已獲得！"}</p>
-      </div>
+
+      {isPractice || isReview ? (
+        <div className="bg-[#FFE8D9] border-2 border-[#FF6B35]/20 rounded-3xl p-6 mb-6 w-full max-w-xs animate-bounce-in">
+          <p className="text-base font-bold text-[#FF6B35]">溫馨提示：XP 只會喺第一次完成課堂時獲得</p>
+        </div>
+      ) : (
+        <div className="bg-xp/20 border-2 border-xp rounded-3xl p-6 mb-6 w-full max-w-xs shadow-[0_4px_0_0_#F5B800] animate-bounce-in">
+          <p className="text-4xl font-extrabold text-xp-dark">+{xpEarned} XP</p>
+          <p className="text-sm text-xp-dark/70 font-bold mt-1">經驗值已獲得！</p>
+        </div>
+      )}
       <div className="flex gap-4 mb-8 w-full max-w-xs">
         <div className="flex-1 bg-success/10 rounded-2xl p-3 border-2 border-success/20">
           <p className="text-2xl font-extrabold text-success">{score}</p>
@@ -963,7 +970,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   }
 
   if (completed) {
-    return <CompletionScreen score={score} total={originalCount} wrongIds={[]} isReview={isReview} unitId={unitId || undefined} />;
+    return <CompletionScreen score={score} total={originalCount} wrongIds={[]} isReview={isReview} unitId={unitId || undefined} isPractice={alreadyCompleted} />;
   }
 
   const question = questions[currentIndex];
@@ -994,7 +1001,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   return (
     <div className="min-h-screen bg-[#FFF8F0]">
       {/* XP fly animation — only on first playthrough */}
-      {showXP && <XPAnimation xp={xpPerQuestion} trigger={xpTrigger} combo={combo} />}
+      {showXP && <XPAnimation xp={xpPerQuestion} trigger={xpTrigger} />}
 
       <div className="sticky top-0 bg-[#FFF8F0] z-40 px-4 pt-4 pb-3 border-b-2 border-[#F0E8E0]">
         <div className="flex items-center gap-3 mb-1">
