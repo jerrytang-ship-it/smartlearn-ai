@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useUser } from "@/lib/user";
 import LoginModal from "./LoginModal";
-import Link from "next/link";
 import Mascot from "./Mascot";
 import EditNickname from "./EditNickname";
 
@@ -133,20 +132,6 @@ export default function ProfilePage() {
           ))}
         </div>
       </div>
-
-      {/* Parent dashboard link */}
-      <Link href="/parent" className="block mt-6 active:scale-95 transition-transform">
-        <div className="bg-white border-2 border-[#F0E8E0] rounded-2xl p-4 shadow-[0_3px_0_0_#F0E8E0] flex items-center gap-3">
-          <span className="text-2xl">📊</span>
-          <div className="flex-1">
-            <p className="font-extrabold text-sm text-[#2D2D2D]">學習報告</p>
-            <p className="text-xs text-[#C4B5A5]">查看詳細學習進度和答題記錄</p>
-          </div>
-          <svg className="w-5 h-5 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
-      </Link>
 
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
       {showEditNickname && <EditNickname onClose={() => setShowEditNickname(false)} />}
