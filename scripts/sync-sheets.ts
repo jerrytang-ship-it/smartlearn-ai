@@ -340,24 +340,6 @@ async function syncDailyChallengeOptions(sheets: ReturnType<typeof google.sheets
   }
 }
 
-async function clearContentTables() {
-  console.log("\n🗑️  Clearing old content...");
-  // Core content
-  await supabase.from("user_answers").delete().gte("id", 0);
-  await supabase.from("user_progress").delete().gte("id", 0);
-  await supabase.from("question_options").delete().gte("id", 0);
-  await supabase.from("questions").delete().gte("id", 0);
-  await supabase.from("chapters").delete().gte("id", 0);
-  await supabase.from("units").delete().gte("id", 0);
-  await supabase.from("stages").delete().gte("id", 0);
-  // Daily challenge content
-  await supabase.from("daily_challenge_records").delete().gte("id", 0);
-  await supabase.from("daily_challenge_opts").delete().gte("id", 0);
-  await supabase.from("daily_challenge_q").delete().gte("id", 0);
-  await supabase.from("daily_challenges").delete().gte("id", 0);
-  console.log("  ✅ Cleared");
-}
-
 async function rebuildProgress() {
   console.log("\n🔄 Rebuilding user progress...");
   // Create progress rows for all users x all chapters
@@ -369,28 +351,57 @@ async function rebuildProgress() {
   }
 }
 
+async function clearCoreContent() {
+  console.log("\n🗑️  Clearing core content...");
+  await supabase.from("user_answers").delete().gte("id", 0);
+  await supabase.from("user_progress").delete().gte("id", 0);
+  await supabase.from("question_options").delete().gte("id", 0);
+  await supabase.from("questions").delete().gte("id", 0);
+  await supabase.from("chapters").delete().gte("id", 0);
+  await supabase.from("units").delete().gte("id", 0);
+  await supabase.from("stages").delete().gte("id", 0);
+  console.log("  ✅ Cleared");
+}
+
+async function clearDailyChallengeContent() {
+  console.log("\n🗑️  Clearing daily challenge content...");
+  await supabase.from("daily_challenge_records").delete().gte("id", 0);
+  await supabase.from("daily_challenge_opts").delete().gte("id", 0);
+  await supabase.from("daily_challenge_q").delete().gte("id", 0);
+  await supabase.from("daily_challenges").delete().gte("id", 0);
+  console.log("  ✅ Cleared");
+}
+
 async function main() {
   console.log("🐬 智學AI — Google Sheets Sync");
   console.log("================================");
   console.log(`Sheet ID: ${SHEET_ID}`);
   console.log(`Supabase: ${SUPABASE_URL}`);
 
+  // Parse CLI args for selective sync
+  const args = process.argv.slice(2);
+  const syncCore = args.length === 0 || args.includes("core") || args.includes("all");
+  const syncDaily = args.length === 0 || args.includes("daily") || args.includes("all");
+
+  console.log(`\nSyncing: ${syncCore ? "core " : ""}${syncDaily ? "daily" : ""}`);
+
   const sheets = await getSheets();
 
-  // Clear old content first — Sheet is the single source of truth
-  await clearContentTables();
+  if (syncCore) {
+    await clearCoreContent();
+    await syncStages(sheets);
+    await syncUnits(sheets);
+    await syncChapters(sheets);
+    await syncQuestions(sheets);
+    await syncOptions(sheets);
+  }
 
-  // Sync in order for FK constraints
-  await syncStages(sheets);
-  await syncUnits(sheets);
-  await syncChapters(sheets);
-  await syncQuestions(sheets);
-  await syncOptions(sheets);
-
-  // Daily challenge content
-  await syncDailyChallenges(sheets);
-  await syncDailyChallengeQuestions(sheets);
-  await syncDailyChallengeOptions(sheets);
+  if (syncDaily) {
+    await clearDailyChallengeContent();
+    await syncDailyChallenges(sheets);
+    await syncDailyChallengeQuestions(sheets);
+    await syncDailyChallengeOptions(sheets);
+  }
 
   // Rebuild progress for all users
   await rebuildProgress();

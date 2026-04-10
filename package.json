@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sync": "tsx scripts/sync-sheets.ts"
+    "sync": "tsx scripts/sync-sheets.ts all",
+    "sync:core": "tsx scripts/sync-sheets.ts core",
+    "sync:daily": "tsx scripts/sync-sheets.ts daily"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.100.1",

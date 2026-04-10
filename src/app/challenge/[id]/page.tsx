@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useUser } from "@/lib/user";
 import LessonPlayer, { type Question } from "@/components/LessonPlayer";
 import Mascot from "@/components/Mascot";
 import Link from "next/link";
@@ -10,6 +11,7 @@ import Link from "next/link";
 export default function ChallengePage() {
   const params = useParams();
   const challengeId = parseInt(params.id as string, 10);
+  const { user } = useUser();
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -51,6 +53,16 @@ export default function ChallengePage() {
     fetchQuestions();
   }, [challengeId]);
 
+  const handleComplete = async (score: number) => {
+    if (!user) return;
+    await supabase.from("daily_challenge_records").upsert({
+      user_id: user.id,
+      challenge_id: challengeId,
+      score,
+      completed_at: new Date().toISOString(),
+    }, { onConflict: "user_id,challenge_id" });
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -69,5 +81,5 @@ export default function ChallengePage() {
     );
   }
 
-  return <LessonPlayer preloadedQuestions={questions} isReview />;
+  return <LessonPlayer preloadedQuestions={questions} isReview onComplete={handleComplete} />;
 }

@@ -22,13 +22,16 @@ export default function TopBar() {
 
         {!loading && stats && (
           <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 bg-[#FF6B35]/12 px-2.5 py-1.5 rounded-full">
+              <span className="text-xs font-extrabold text-[#FF6B35]">Lv {stats.level}</span>
+            </div>
             <div className="flex items-center gap-1 bg-[#FF6B35]/12 px-3 py-1.5 rounded-full">
               <span className="text-sm animate-flame">🔥</span>
               <span className="text-sm font-extrabold text-[#FF6B35]">{stats.streak}</span>
             </div>
             <div className="flex items-center gap-1 bg-[#FF6B35]/12 px-3 py-1.5 rounded-full">
               <span className="text-sm">⚡</span>
-              <span className="text-sm font-extrabold text-[#FF6B35]">{stats.xp}</span>
+              <span className="text-sm font-extrabold text-[#FF6B35]">{stats.xp} XP</span>
             </div>
           </div>
         )}

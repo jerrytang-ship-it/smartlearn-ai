@@ -78,9 +78,9 @@ function TodayHeroCard({ challenge, completed, score }: { challenge: Challenge |
             )}
 
             {completed && (
-              <div className="mt-3 inline-flex items-center gap-2 bg-white/20 rounded-full px-3 py-1.5">
+              <div className="mt-3 inline-flex items-center gap-2 bg-white/25 rounded-full px-3 py-1.5 backdrop-blur-sm">
                 <span className="text-sm">✅</span>
-                <span className="text-white text-xs font-bold">已完成 · {score}/4</span>
+                <span className="text-white text-xs font-extrabold">今日已完成 · {score}/4</span>
               </div>
             )}
           </div>
@@ -90,23 +90,26 @@ function TodayHeroCard({ challenge, completed, score }: { challenge: Challenge |
         <div className="bg-white px-5 py-3 flex items-center justify-between border-t border-[#F0E8E0]">
           <div className="flex items-center gap-2 text-[#A0907E] text-xs font-medium">
             <span>{cat.emoji}</span>
-            <span>4題 · 約3分鐘 · 每日更新</span>
+            <span>{completed ? "你已經完成今日挑戰！" : "4題 · 約3分鐘 · 每日更新"}</span>
           </div>
           <Link
             href={`/challenge/${challenge.id}`}
-            className="text-white text-xs font-extrabold px-3 py-1.5 rounded-full"
+            className="text-white text-xs font-extrabold px-3 py-1.5 rounded-full whitespace-nowrap"
             style={{ background: cat.color }}
           >
-            {completed ? "重玩 ▶" : "立即開始 ▶"}
+            {completed ? "🔄 重做" : "立即開始 ▶"}
           </Link>
         </div>
       </div>
 
-      {/* Hint line */}
-      <div className="bg-white border border-[#F0E8E0] rounded-xl p-3 mt-3 flex items-start gap-2">
-        <span className="text-sm">💡</span>
-        <p className="text-xs text-[#A0907E]">每日輪替四個類別，今日完成挑戰可增加連續天數！</p>
-      </div>
+      {/* Completion success banner */}
+      {completed && (
+        <div className="bg-success/10 border-2 border-success/30 rounded-xl p-3 mt-3 flex items-center gap-2">
+          <span className="text-xl">🎉</span>
+          <p className="text-xs text-success font-bold flex-1">你已經完成今日挑戰，點擊上面可以重做！</p>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -4,9 +4,11 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/lib/user";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Mascot, { MascotBubble } from "./Mascot";
 import ComboCounter from "./ComboCounter";
 import XPAnimation from "./XPAnimation";
+import LevelUpModal from "./LevelUpModal";
 import { playCorrect, playWrong, playCombo, playComplete, playXP, playTap } from "@/lib/sounds";
 
 export interface QuestionOption {
@@ -606,7 +608,7 @@ function MatchQuestion({
 
 // ─── Completion Screen ───
 
-function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice }: { score: number; total: number; wrongIds: number[]; isReview?: boolean; unitId?: number; isPractice?: boolean }) {
+function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice, pendingLevelUp, onShowLevelUp }: { score: number; total: number; wrongIds: number[]; isReview?: boolean; unitId?: number; isPractice?: boolean; pendingLevelUp?: number | null; onShowLevelUp?: () => void }) {
   const percentage = Math.round((score / total) * 100);
   const xpEarned = score * 15;
   const passed = percentage >= 60;
@@ -619,7 +621,7 @@ function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice
       <h2 className="text-3xl font-extrabold mb-1 animate-slide-up">
         {isPractice || isReview
           ? "✅ 練習完成！做得好！"
-          : (passed ? "太棒了！🎉" : "繼續加油！💪")}
+          : (passed ? "犀利！🎉" : "繼續加油！💪")}
       </h2>
       <p className="text-[#A0907E] mb-6 font-medium">你答對了 {score}/{total} 題</p>
 
@@ -655,17 +657,27 @@ function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice
         </Link>
       )}
 
-      <Link href={unitId ? `/?unit=${unitId}` : "/"} className="btn-3d-primary w-full max-w-xs text-center text-lg">
-        繼續
-      </Link>
+      {pendingLevelUp && onShowLevelUp ? (
+        <button
+          onClick={onShowLevelUp}
+          className="btn-3d-primary w-full max-w-xs text-center text-lg"
+        >
+          繼續
+        </button>
+      ) : (
+        <Link href={unitId ? `/?unit=${unitId}` : "/"} className="btn-3d-primary w-full max-w-xs text-center text-lg">
+          繼續
+        </Link>
+      )}
     </div>
   );
 }
 
 // ─── Main LessonPlayer ───
 
-export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQuestions, isReview }: { chapterId?: number; reviewQuestionIds?: number[]; preloadedQuestions?: Question[]; isReview?: boolean }) {
-  const { user, refreshStats } = useUser();
+export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQuestions, isReview, onComplete }: { chapterId?: number; reviewQuestionIds?: number[]; preloadedQuestions?: Question[]; isReview?: boolean; onComplete?: (score: number, total: number) => void }) {
+  const { user, stats, refreshStats } = useUser();
+  const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [alreadyCompleted, setAlreadyCompleted] = useState(false);
@@ -686,6 +698,9 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
     question_order: string; xp_earned_ids: string;
   } | null>(null);
   const [xpEarnedIds, setXpEarnedIds] = useState<number[]>([]); // track which question IDs already earned XP
+  const [sessionStartXP, setSessionStartXP] = useState<number>(0); // XP when the lesson started
+  const [pendingLevelUp, setPendingLevelUp] = useState<number | null>(null); // new level earned during quiz
+  const [showLevelUp, setShowLevelUp] = useState<number | null>(null); // new level to display
 
   // Save full progress to Supabase
   const saveProgress = useCallback(async (
@@ -754,6 +769,9 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
         setQuestions(mapped);
         setOriginalCount(mapped.length);
 
+        // Capture starting XP for level-up detection
+        if (stats) setSessionStartXP(stats.xp);
+
         // Get unit_id for navigation after completion
         if (chapterId) {
           const { data: chapterData } = await supabase
@@ -811,6 +829,16 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
         setXpTrigger((t) => t + 1);
         playXP();
         setXpEarnedIds((prev) => [...prev, qId]);
+
+        // Check for level-up (300 XP per level)
+        const xpBefore = sessionStartXP + xpEarnedIds.length * 15;
+        const xpAfter = xpBefore + 15;
+        const levelBefore = 1 + Math.floor(xpBefore / 300);
+        const levelAfter = 1 + Math.floor(xpAfter / 300);
+        if (levelAfter > levelBefore) {
+          // Defer the popup until after completion screen
+          setPendingLevelUp(levelAfter);
+        }
       }
       setCombo(newCombo);
       setShowCombo(true);
@@ -868,6 +896,10 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
         });
         await refreshStats();
         await clearProgress();
+      }
+      // Call completion callback (used by daily challenges)
+      if (onComplete) {
+        onComplete(score, originalCount);
       }
       setCompleted(true);
     } else {
@@ -970,7 +1002,16 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   }
 
   if (completed) {
-    return <CompletionScreen score={score} total={originalCount} wrongIds={[]} isReview={isReview} unitId={unitId || undefined} isPractice={alreadyCompleted} />;
+    return <CompletionScreen
+      score={score}
+      total={originalCount}
+      wrongIds={[]}
+      isReview={isReview}
+      unitId={unitId || undefined}
+      isPractice={alreadyCompleted}
+      pendingLevelUp={pendingLevelUp}
+      onShowLevelUp={() => setShowLevelUp(pendingLevelUp)}
+    />;
   }
 
   const question = questions[currentIndex];
@@ -1002,6 +1043,17 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
     <div className="min-h-screen bg-[#FFF8F0]">
       {/* XP fly animation — only on first playthrough */}
       {showXP && <XPAnimation xp={xpPerQuestion} trigger={xpTrigger} />}
+
+      {/* Level up celebration — shown after completion, before navigating */}
+      {showLevelUp !== null && (
+        <LevelUpModal
+          newLevel={showLevelUp}
+          onClose={() => {
+            setShowLevelUp(null);
+            router.push(unitId ? `/?unit=${unitId}` : "/");
+          }}
+        />
+      )}
 
       <div className="sticky top-0 bg-[#FFF8F0] z-40 px-4 pt-4 pb-3 border-b-2 border-[#F0E8E0]">
         <div className="flex items-center gap-3 mb-1">

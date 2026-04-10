@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useUser } from "@/lib/user";
 import LoginModal from "./LoginModal";
 import Mascot from "./Mascot";
@@ -22,6 +23,8 @@ export default function ProfilePage() {
   }
 
   const levelProgress = (stats.xp % 300) / 300;
+  const currentLevelStart = (stats.level - 1) * 300;
+  const nextLevelAt = stats.level * 300;
   const accuracy = stats.totalAnswered > 0
     ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100)
     : 0;
@@ -56,14 +59,19 @@ export default function ProfilePage() {
 
         <div className="mt-4 relative z-10">
           <div className="flex justify-between text-xs font-bold mb-1">
-            <span className="text-white/70">等級 {stats.level}</span>
-            <span className="text-white/70">等級 {stats.level + 1}</span>
+            <span className="text-white/80">等級 {stats.level}</span>
+            <span className="text-white/80">等級 {stats.level + 1}</span>
           </div>
           <div className="h-4 bg-white/20 rounded-full overflow-hidden">
             <div className="h-full bg-xp rounded-full transition-all" style={{ width: `${levelProgress * 100}%` }} />
           </div>
-          <p className="text-xs text-white/60 mt-1 text-center font-medium">
-            還需要 {300 - (stats.xp % 300)} XP 升級
+          <div className="flex justify-between text-xs text-white/60 mt-1 font-medium">
+            <span>{currentLevelStart} XP</span>
+            <span className="font-bold text-white/80">{stats.xp} / {nextLevelAt} XP</span>
+            <span>{nextLevelAt} XP</span>
+          </div>
+          <p className="text-xs text-white/70 mt-1 text-center font-medium">
+            還需要 {nextLevelAt - stats.xp} XP 升到下一級
           </p>
         </div>
       </div>
@@ -130,6 +138,41 @@ export default function ProfilePage() {
               <p className="text-xs font-bold text-[#A0907E]">{a.name}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Help & Info section */}
+      <div className="bg-white rounded-2xl p-5 border-2 border-[#F0E8E0] shadow-[0_3px_0_0_#F0E8E0] mt-6">
+        <h3 className="font-extrabold text-base mb-4 text-[#2D2D2D]">💬 幫助同資訊</h3>
+        <div className="space-y-2">
+          <Link href="/legal/faq" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#FFE8D9] active:scale-95 transition-all">
+            <span className="text-xl">❓</span>
+            <p className="flex-1 text-sm font-bold text-[#2D2D2D]">常見問題</p>
+            <svg className="w-4 h-4 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+          <a href="mailto:support@smartlearn-ai.com" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#FFE8D9] active:scale-95 transition-all">
+            <span className="text-xl">📧</span>
+            <p className="flex-1 text-sm font-bold text-[#2D2D2D]">聯絡我哋</p>
+            <svg className="w-4 h-4 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+          <Link href="/legal/terms" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#FFE8D9] active:scale-95 transition-all">
+            <span className="text-xl">📋</span>
+            <p className="flex-1 text-sm font-bold text-[#2D2D2D]">條款及細則</p>
+            <svg className="w-4 h-4 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+          <Link href="/legal/privacy" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#FFE8D9] active:scale-95 transition-all">
+            <span className="text-xl">🔒</span>
+            <p className="flex-1 text-sm font-bold text-[#2D2D2D]">私隱政策</p>
+            <svg className="w-4 h-4 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
         </div>
       </div>
 
