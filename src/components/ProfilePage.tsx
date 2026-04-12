@@ -4,8 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useUser } from "@/lib/user";
 import LoginModal from "./LoginModal";
-import Mascot from "./Mascot";
+import Mascot, { MascotBubble } from "./Mascot";
 import EditNickname from "./EditNickname";
+import AchievementsSection from "./AchievementsSection";
 
 export default function ProfilePage() {
   const [showLogin, setShowLogin] = useState(false);
@@ -15,9 +16,7 @@ export default function ProfilePage() {
   if (loading || !user || !stats) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-float">
-          <Mascot size={80} mood="thinking" />
-        </div>
+        <MascotBubble message="載入中..." mood="thinking" mascotSize={64} />
       </div>
     );
   }
@@ -34,12 +33,12 @@ export default function ProfilePage() {
       {/* Profile header card */}
       <div className="bg-gradient-to-br from-primary to-secondary rounded-3xl p-6 text-white mb-6 shadow-[0_6px_0_0_#5A10D4] relative overflow-hidden">
         <div className="absolute top-0 right-0 opacity-10">
-          <Mascot size={140} mood="celebrating" />
+          <Mascot size={140} mood="proud" />
         </div>
 
         <div className="flex items-center gap-4 relative z-10">
           <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-            <Mascot size={48} mood="happy" />
+            <Mascot size={48} mood={stats.streak > 0 ? "waving" : "sleeping"} />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -79,7 +78,7 @@ export default function ProfilePage() {
       {user.isAnonymous && (
         <button
           onClick={() => setShowLogin(true)}
-          className="w-full bg-white border-2 border-[#F0E8E0] shadow-[0_4px_0_0_#F0E8E0] active:translate-y-1 active:shadow-none text-[#2D2D2D] font-bold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 mb-6"
+          className="w-full bg-white border-2 border-[#E0EAF0] shadow-[0_4px_0_0_#E0EAF0] active:translate-y-1 active:shadow-none text-[#2D2D2D] font-bold py-3 rounded-2xl transition-all flex items-center justify-center gap-2 mb-6"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -122,51 +121,34 @@ export default function ProfilePage() {
       </div>
 
       {/* Achievements */}
-      <div className="bg-white rounded-2xl p-5 border-2 border-[#F0E8E0] shadow-[0_3px_0_0_#F0E8E0]">
-        <h3 className="font-extrabold text-base mb-4 text-[#2D2D2D]">🏆 成就</h3>
-        <div className="flex gap-3">
-          {[
-            { icon: "🌟", name: "初學者", unlocked: stats.chaptersCompleted >= 1, bg: "bg-xp/15 border-xp/20" },
-            { icon: "🔥", name: "7天連續", unlocked: stats.longestStreak >= 7, bg: "bg-streak/15 border-streak/20" },
-            { icon: "🧠", name: "AI專家", unlocked: stats.chaptersCompleted >= 10, bg: "bg-secondary/15 border-secondary/20" },
-            { icon: "🔒", name: "???", unlocked: false, bg: "bg-[#FFE8D9] border-[#F0E8E0]" },
-          ].map((a) => (
-            <div key={a.name} className={`flex-1 text-center ${a.unlocked ? "" : "opacity-40"}`}>
-              <div className={`w-14 h-14 mx-auto rounded-2xl border-2 flex items-center justify-center text-2xl mb-1.5 ${a.bg}`}>
-                {a.icon}
-              </div>
-              <p className="text-xs font-bold text-[#A0907E]">{a.name}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      <AchievementsSection stats={stats} accuracy={accuracy} />
 
       {/* Help & Info section */}
-      <div className="bg-white rounded-2xl p-5 border-2 border-[#F0E8E0] shadow-[0_3px_0_0_#F0E8E0] mt-6">
-        <h3 className="font-extrabold text-base mb-4 text-[#2D2D2D]">💬 幫助同資訊</h3>
+      <div className="bg-white rounded-2xl p-5 border-2 border-[#E0EAF0] shadow-[0_3px_0_0_#E0EAF0] mt-6">
+        <h3 className="font-extrabold text-base mb-4 text-[#2D2D2D]">💬 幫助與資訊</h3>
         <div className="space-y-2">
-          <Link href="/legal/faq" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#FFE8D9] active:scale-95 transition-all">
+          <Link href="/legal/faq" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#DCEEFB] active:scale-95 transition-all">
             <span className="text-xl">❓</span>
             <p className="flex-1 text-sm font-bold text-[#2D2D2D]">常見問題</p>
             <svg className="w-4 h-4 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </Link>
-          <a href="mailto:support@smartlearn-ai.com" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#FFE8D9] active:scale-95 transition-all">
+          <a href="mailto:support@smartlearn-ai.com" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#DCEEFB] active:scale-95 transition-all">
             <span className="text-xl">📧</span>
             <p className="flex-1 text-sm font-bold text-[#2D2D2D]">聯絡我哋</p>
             <svg className="w-4 h-4 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </a>
-          <Link href="/legal/terms" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#FFE8D9] active:scale-95 transition-all">
+          <Link href="/legal/terms" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#DCEEFB] active:scale-95 transition-all">
             <span className="text-xl">📋</span>
             <p className="flex-1 text-sm font-bold text-[#2D2D2D]">條款及細則</p>
             <svg className="w-4 h-4 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </Link>
-          <Link href="/legal/privacy" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#FFE8D9] active:scale-95 transition-all">
+          <Link href="/legal/privacy" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#DCEEFB] active:scale-95 transition-all">
             <span className="text-xl">🔒</span>
             <p className="flex-1 text-sm font-bold text-[#2D2D2D]">私隱政策</p>
             <svg className="w-4 h-4 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

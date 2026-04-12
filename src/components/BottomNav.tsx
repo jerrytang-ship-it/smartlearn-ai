@@ -47,14 +47,14 @@ export default function BottomNav() {
               key={tab.href}
               href={tab.href}
               className={`flex-1 flex flex-col items-center py-2 pt-3 transition-all ${
-                active ? "text-[#FF6B35]" : "text-[#C7C7CC]"
+                active ? "text-[#2196F3]" : "text-[#C7C7CC]"
               }`}
             >
               {tab.icon(active)}
               <span className={`text-xs mt-0.5 ${active ? "font-extrabold" : "font-medium"}`}>
                 {tab.label}
               </span>
-              {active && <div className="w-1.5 h-1.5 bg-[#FF6B35] rounded-full mt-1" />}
+              {active && <div className="w-1.5 h-1.5 bg-[#2196F3] rounded-full mt-1" />}
             </Link>
           );
         })}

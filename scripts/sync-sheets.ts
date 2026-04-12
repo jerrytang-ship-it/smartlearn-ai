@@ -380,14 +380,18 @@ async function main() {
 
   // Parse CLI args for selective sync
   const args = process.argv.slice(2);
-  const syncCore = args.length === 0 || args.includes("core") || args.includes("all");
-  const syncDaily = args.length === 0 || args.includes("daily") || args.includes("all");
-
-  console.log(`\nSyncing: ${syncCore ? "core " : ""}${syncDaily ? "daily" : ""}`);
+  const syncCore = args.includes("core") || args.includes("all") || args.length === 0;
+  const syncDaily = args.includes("daily") || args.includes("all") || args.length === 0;
+  const syncStagesOnly = args.includes("stages");
 
   const sheets = await getSheets();
 
-  if (syncCore) {
+  if (syncStagesOnly) {
+    console.log("\nSyncing: stages only");
+    await supabase.from("stages").delete().gte("id", 0);
+    await syncStages(sheets);
+  } else if (syncCore) {
+    console.log("\nSyncing: core");
     await clearCoreContent();
     await syncStages(sheets);
     await syncUnits(sheets);

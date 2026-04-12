@@ -39,7 +39,7 @@ export default function EditNickname({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center px-4">
-      <div className="bg-white rounded-3xl w-full max-w-sm p-6 animate-slide-up border-2 border-[#F0E8E0]">
+      <div className="bg-white rounded-3xl w-full max-w-sm p-6 animate-slide-up border-2 border-[#E0EAF0]">
         <h2 className="text-lg font-extrabold text-[#2D2D2D] mb-1">✏️ 修改暱稱</h2>
         <p className="text-xs text-[#C4B5A5] mb-4">此暱稱會顯示在排行榜上</p>
 
@@ -52,7 +52,7 @@ export default function EditNickname({ onClose }: { onClose: () => void }) {
           }}
           maxLength={12}
           placeholder="輸入新暱稱..."
-          className="w-full bg-[#FFF8F0] border-2 border-[#F0E8E0] rounded-xl px-4 py-3 text-[#2D2D2D] font-bold placeholder-[#C4B5A5] focus:border-primary focus:outline-none transition-colors"
+          className="w-full bg-[#F0F7FF] border-2 border-[#E0EAF0] rounded-xl px-4 py-3 text-[#2D2D2D] font-bold placeholder-[#C4B5A5] focus:border-primary focus:outline-none transition-colors"
         />
 
         <div className="flex justify-between items-center mt-2 mb-4">
@@ -63,7 +63,7 @@ export default function EditNickname({ onClose }: { onClose: () => void }) {
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border-2 border-[#F0E8E0] text-[#A0907E] font-bold text-sm"
+            className="flex-1 py-2.5 rounded-xl border-2 border-[#E0EAF0] text-[#A0907E] font-bold text-sm"
           >
             取消
           </button>

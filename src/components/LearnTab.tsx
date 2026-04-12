@@ -12,16 +12,16 @@ export default function LearnTab() {
   return (
     <div className="pb-28">
       {/* Pill toggle */}
-      <div className="px-4 pt-3 pb-2 sticky top-14 z-30 bg-[#FFF8F0]">
-        <div className="flex bg-[#FFE8D9] rounded-[16px] p-1">
+      <div className="px-4 pt-3 pb-2 sticky top-14 z-30 bg-[#F0F7FF]">
+        <div className="flex bg-[#DCEEFB] rounded-[16px] p-1">
           <button
             onClick={() => setActiveTab("course")}
             className={`flex-1 py-2.5 rounded-[14px] text-sm font-extrabold transition-all ${
               activeTab === "course"
                 ? "text-white"
-                : "text-[#FF6B35]/60"
+                : "text-[#2196F3]/60"
             }`}
-            style={activeTab === "course" ? { background: "#FF6B35", boxShadow: "0 3px 12px rgba(255,107,53,0.4)" } : {}}
+            style={activeTab === "course" ? { background: "#2196F3", boxShadow: "0 3px 12px rgba(33,150,243,0.4)" } : {}}
           >
             🎓 核心課程
           </button>
@@ -30,9 +30,9 @@ export default function LearnTab() {
             className={`flex-1 py-2.5 rounded-[14px] text-sm font-extrabold transition-all relative ${
               activeTab === "daily"
                 ? "text-white"
-                : "text-[#FF6B35]/60"
+                : "text-[#2196F3]/60"
             }`}
-            style={activeTab === "daily" ? { background: "#FF6B35", boxShadow: "0 3px 12px rgba(255,107,53,0.4)" } : {}}
+            style={activeTab === "daily" ? { background: "#2196F3", boxShadow: "0 3px 12px rgba(33,150,243,0.4)" } : {}}
           >
             ⚡ 每日挑戰
             {activeTab !== "daily" && (

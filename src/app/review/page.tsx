@@ -65,7 +65,7 @@ export default function ReviewPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Mascot size={80} mood="thinking" />
+        <MascotBubble message="載入中..." mood="thinking" mascotSize={64} />
       </div>
     }>
       <ReviewContent />

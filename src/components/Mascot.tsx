@@ -14,7 +14,7 @@ interface MascotProps {
 }
 
 const moodToImage: Record<MascotMood, string> = {
-  happy: "/mascot/happy.png",
+  happy: "/mascot/waving.png",       // no happy.png, fallback to waving
   waving: "/mascot/waving.png",
   thinking: "/mascot/thinking.png",
   celebrating: "/mascot/celebrating.png",

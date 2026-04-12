@@ -8,10 +8,10 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 bg-black/40 z-[60] flex items-end sm:items-center justify-center">
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md p-6 pb-8 animate-slide-up relative border-t-2 sm:border-2 border-[#F0E8E0]">
+      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md p-6 pb-8 animate-slide-up relative border-t-2 sm:border-2 border-[#E0EAF0]">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#FFE8D9] flex items-center justify-center text-[#A0907E] hover:bg-[#FFE8D9] transition-colors"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#DCEEFB] flex items-center justify-center text-[#A0907E] hover:bg-[#DCEEFB] transition-colors"
         >
           ✕
         </button>
@@ -44,7 +44,7 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
 
         <button
           onClick={loginWithGoogle}
-          className="w-full bg-[#FFF8F0] border-2 border-[#F0E8E0] shadow-[0_4px_0_0_#F0E8E0] active:translate-y-1 active:shadow-none font-bold py-3.5 rounded-2xl transition-all flex items-center justify-center gap-3 mb-3 text-[#2D2D2D]"
+          className="w-full bg-[#F0F7FF] border-2 border-[#E0EAF0] shadow-[0_4px_0_0_#E0EAF0] active:translate-y-1 active:shadow-none font-bold py-3.5 rounded-2xl transition-all flex items-center justify-center gap-3 mb-3 text-[#2D2D2D]"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />

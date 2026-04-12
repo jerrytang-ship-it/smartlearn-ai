@@ -27,8 +27,8 @@ interface Unit {
 
 // Theme colours per unit index
 const unitThemes = [
-  { from: "#FF6B35", to: "#FF9500" }, // orange
-  { from: "#1CB0F6", to: "#0099CC" }, // blue
+  { from: "#2196F3", to: "#64B5F6" }, // sky blue
+  { from: "#1CB0F6", to: "#0099CC" }, // ocean blue
   { from: "#CE82FF", to: "#9B59B6" }, // purple
   { from: "#58CC02", to: "#3daa00" }, // green
   { from: "#FF4B4B", to: "#CC0000" }, // red
@@ -88,8 +88,8 @@ function UnitTabs({
   return (
     <div className="relative mb-4">
       {/* Fade edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#FFF8F0] to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#FFF8F0] to-transparent z-10 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#F0F7FF] to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#F0F7FF] to-transparent z-10 pointer-events-none" />
 
       <div ref={scrollRef} className="flex gap-2 overflow-x-auto px-4 py-1 no-scrollbar">
         {units.map((unit, idx) => {
@@ -111,7 +111,7 @@ function UnitTabs({
                 boxShadow: `0 4px 0 0 ${theme.to}`,
               } : {
                 background: "#FFFFFF",
-                border: "2px solid #F0E8E0",
+                border: "2px solid #E0EAF0",
               }}
             >
               <div className="text-left">
@@ -191,10 +191,10 @@ function LockedUnitView({ unit, index, prevUnitTitle, prevRemaining }: {
       <UnitHeroBanner unit={unit} index={index} />
 
       {/* Locked message card */}
-      <div className="border-2 border-dashed border-[#F0E8E0] rounded-2xl p-6 text-center mb-8">
+      <div className="border-2 border-dashed border-[#E0EAF0] rounded-2xl p-6 text-center mb-8">
         <span className="text-4xl block mb-3">🔒</span>
         <h3 className="text-lg font-extrabold text-[#2D2D2D] mb-2">
-          Unit {index + 1} 仲未解鎖
+          單元 {index + 1} 仲未解鎖
         </h3>
         <p className="text-sm text-[#A0907E] mb-3">
           完成「{prevUnitTitle}」的所有課，就可以解鎖！
@@ -206,21 +206,26 @@ function LockedUnitView({ unit, index, prevUnitTitle, prevRemaining }: {
         )}
       </div>
 
-      {/* Ghost teaser of first 3 chapters */}
-      <div className="opacity-20 pointer-events-none flex flex-col items-center">
-        {unit.chapters.slice(0, 3).map((chapter, idx) => (
-          <div key={chapter.id}>
-            {idx > 0 && <PathConnector />}
-            <div className="py-3 flex flex-col items-center">
-              <div className="w-[72px] h-[72px] rounded-full bg-[#FFE8D9] flex items-center justify-center">
-                <svg className="w-6 h-6 text-[#C4B5A5]" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-                </svg>
+      {/* Ghost teaser of all chapters */}
+      <div
+        className="relative rounded-3xl py-8 px-4 overflow-hidden"
+        style={{ background: `linear-gradient(180deg, ${getTheme(index).from}05, ${getTheme(index).from}10, ${getTheme(index).from}05)` }}
+      >
+        <div className="opacity-20 pointer-events-none flex flex-col items-center">
+          {unit.chapters.map((chapter, idx) => (
+            <div key={chapter.id}>
+              {idx > 0 && <PathConnector />}
+              <div className="py-3 flex flex-col items-center">
+                <div className="w-[72px] h-[72px] rounded-full bg-[#DCEEFB] flex items-center justify-center">
+                  <svg className="w-6 h-6 text-[#C4B5A5]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                  </svg>
+                </div>
+                <p className="mt-2 text-sm font-bold text-[#C4B5A5] text-center max-w-[100px]">{chapter.title}</p>
               </div>
-              <p className="mt-2 text-sm font-bold text-[#C4B5A5] text-center max-w-[100px]">{chapter.title}</p>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -240,8 +245,7 @@ function ChapterNode({ chapter, index, theme }: { chapter: Chapter; index: numbe
     <div className={`flex flex-col items-center ${pos} transition-all`}>
       {/* "Start learning" bubble for current chapter */}
       {isUnlocked && (
-        <div className="mb-2 px-3 py-1.5 rounded-full text-white text-xs font-bold animate-bounce"
-          style={{ background: `linear-gradient(135deg, ${theme.from}, ${theme.to})` }}>
+        <div className="mb-2 px-4 py-2 rounded-full text-white text-xs font-extrabold animate-bounce bg-success shadow-[0_3px_0_0_#04B386]">
           ▶ 而家學習
         </div>
       )}
@@ -253,7 +257,7 @@ function ChapterNode({ chapter, index, theme }: { chapter: Chapter; index: numbe
             ? { background: `linear-gradient(135deg, #06D6A0, #04B386)`, boxShadow: "0 6px 0 0 #04B386" }
             : isUnlocked
             ? { background: `linear-gradient(135deg, ${theme.from}, ${theme.to})`, boxShadow: `0 6px 0 0 ${theme.to}` }
-            : { background: "#FFE8D9", boxShadow: "0 4px 0 0 #F0E8E0" }
+            : { background: "#DCEEFB", boxShadow: "0 4px 0 0 #E0EAF0" }
         }
       >
         {isComplete ? (
@@ -308,7 +312,7 @@ function PathConnector() {
     <div className="flex justify-center py-1">
       <div className="flex flex-col items-center gap-1">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="w-2 h-2 rounded-full bg-[#FFE8D9]" />
+          <div key={i} className="w-2 h-2 rounded-full bg-[#DCEEFB]" />
         ))}
       </div>
     </div>
@@ -419,7 +423,7 @@ export default function ChapterMap({ focusUnitId }: { focusUnitId?: number } = {
           <div className="px-4 mb-4">
             <MascotBubble
               message={welcomeMessage}
-              mood={stats?.streak && stats.streak > 1 ? "waving" : "happy"}
+              mood={stats?.streak && stats.streak > 1 ? "waving" : "learning"}
               className="animate-slide-up"
             />
           </div>
@@ -449,13 +453,24 @@ export default function ChapterMap({ focusUnitId }: { focusUnitId?: number } = {
       {unlocked ? (
         <div className="px-4">
           <UnitHeroBanner unit={activeUnit} index={activeUnitIndex} />
-          <div className="flex flex-col">
-            {activeUnit.chapters.map((chapter, idx) => (
-              <div key={chapter.id}>
-                {idx > 0 && <PathConnector />}
-                <ChapterNode chapter={chapter} index={idx} theme={theme} />
-              </div>
-            ))}
+          <div
+            className="relative rounded-3xl py-8 px-4 mt-2 mb-4 overflow-hidden"
+            style={{ background: `linear-gradient(180deg, ${theme.from}08, ${theme.from}15, ${theme.from}08)` }}
+          >
+            {/* Decorative side dots */}
+            <div className="absolute top-8 left-3 w-2 h-2 rounded-full" style={{ background: `${theme.from}20` }} />
+            <div className="absolute top-24 right-3 w-3 h-3 rounded-full" style={{ background: `${theme.from}15` }} />
+            <div className="absolute bottom-16 left-5 w-2.5 h-2.5 rounded-full" style={{ background: `${theme.from}18` }} />
+            <div className="absolute bottom-32 right-5 w-2 h-2 rounded-full" style={{ background: `${theme.from}20` }} />
+
+            <div className="flex flex-col relative z-10">
+              {activeUnit.chapters.map((chapter, idx) => (
+                <div key={chapter.id}>
+                  {idx > 0 && <PathConnector />}
+                  <ChapterNode chapter={chapter} index={idx} theme={theme} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : (

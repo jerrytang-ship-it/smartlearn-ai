@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/lib/user";
-import Mascot from "./Mascot";
+import Mascot, { MascotBubble } from "./Mascot";
 
 interface LeaderboardEntry {
   user_id: string;
@@ -27,11 +27,11 @@ function EntryRow({ entry, rank, isMe }: { entry: LeaderboardEntry; rank: number
           ? "bg-primary/15 border-2 border-primary/30 shadow-[0_3px_0_0] shadow-primary/20"
           : isTop3
           ? "bg-white border-2 border-xp/20 shadow-[0_3px_0_0] shadow-xp/20"
-          : "bg-white border-2 border-[#F0E8E0] shadow-[0_3px_0_0_#F0E8E0]"
+          : "bg-white border-2 border-[#E0EAF0] shadow-[0_3px_0_0_#E0EAF0]"
       }`}
     >
       <div className={`w-9 h-9 rounded-full flex items-center justify-center font-extrabold text-sm ${
-        isTop3 ? "bg-xp/15 text-xp" : "bg-[#FFE8D9] text-[#A0907E]"
+        isTop3 ? "bg-xp/15 text-xp" : "bg-[#DCEEFB] text-[#A0907E]"
       }`}>
         {isTop3 ? medals[rank - 1] : rank}
       </div>
@@ -136,7 +136,10 @@ export default function Leaderboard() {
   useEffect(() => {
     async function fetchMonthly() {
       setMonthlyLoading(true);
-      const dateStr = selectedMonth.toISOString().split("T")[0];
+      // Use local date format to avoid timezone offset issues
+      const y = selectedMonth.getFullYear();
+      const m = String(selectedMonth.getMonth() + 1).padStart(2, "0");
+      const dateStr = `${y}-${m}-01`;
       const { data } = await supabase.rpc("get_monthly_xp", { p_month: dateStr });
 
       if (data) {
@@ -162,7 +165,7 @@ export default function Leaderboard() {
   if (loading || userLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-float"><Mascot size={80} mood="thinking" /></div>
+        <MascotBubble message="載入中..." mood="thinking" mascotSize={64} />
       </div>
     );
   }
@@ -196,7 +199,7 @@ export default function Leaderboard() {
       </div>
 
       {/* Tab toggle */}
-      <div className="flex bg-[#FFE8D9] rounded-full p-1 mb-5">
+      <div className="flex bg-[#DCEEFB] rounded-full p-1 mb-5">
         <button
           onClick={() => setTab("alltime")}
           className={`flex-1 py-2 rounded-full text-sm font-extrabold transition-all ${
@@ -220,7 +223,7 @@ export default function Leaderboard() {
         <div className="flex items-center justify-center gap-4 mb-5">
           <button
             onClick={goToPrevMonth}
-            className="w-9 h-9 rounded-full bg-white border-2 border-[#F0E8E0] flex items-center justify-center text-[#A0907E] active:scale-90 transition-all shadow-[0_3px_0_0_#F0E8E0] active:translate-y-0.5 active:shadow-none"
+            className="w-9 h-9 rounded-full bg-white border-2 border-[#E0EAF0] flex items-center justify-center text-[#A0907E] active:scale-90 transition-all shadow-[0_3px_0_0_#E0EAF0] active:translate-y-0.5 active:shadow-none"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -232,7 +235,7 @@ export default function Leaderboard() {
           <button
             onClick={goToNextMonth}
             disabled={isCurrentMonth}
-            className={`w-9 h-9 rounded-full bg-white border-2 border-[#F0E8E0] flex items-center justify-center active:scale-90 transition-all shadow-[0_3px_0_0_#F0E8E0] active:translate-y-0.5 active:shadow-none ${
+            className={`w-9 h-9 rounded-full bg-white border-2 border-[#E0EAF0] flex items-center justify-center active:scale-90 transition-all shadow-[0_3px_0_0_#E0EAF0] active:translate-y-0.5 active:shadow-none ${
               isCurrentMonth ? "opacity-30 cursor-not-allowed" : "text-[#A0907E]"
             }`}
           >
@@ -264,11 +267,11 @@ export default function Leaderboard() {
       {/* Entries list */}
       {monthlyLoading && tab === "monthly" ? (
         <div className="flex items-center justify-center py-12">
-          <Mascot size={60} mood="thinking" />
+          <MascotBubble message="載入中..." mood="thinking" mascotSize={64} />
         </div>
       ) : entries.length === 0 ? (
         <div className="text-center py-12">
-          <Mascot size={80} mood="encouraging" />
+          <Mascot size={80} mood="sleeping" />
           <p className="text-[#A0907E] mt-4 font-medium">
             {tab === "monthly" ? `${monthLabel}暫時未有人上榜，成為第一個吧！` : "還沒有人上榜，成為第一個吧！"}
           </p>

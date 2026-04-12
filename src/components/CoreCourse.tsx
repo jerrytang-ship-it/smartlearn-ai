@@ -32,7 +32,7 @@ interface Stage {
 }
 
 const defaultStages: Stage[] = [
-  { id: 0, label: "基礎篇", emoji: "🌱", color: "#FF6B35", unitRange: [0, 32] },
+  { id: 0, label: "基礎篇", emoji: "🌱", color: "#2196F3", unitRange: [0, 32] },
   { id: 1, label: "進階篇", emoji: "🔥", color: "#1CB0F6", unitRange: [33, 65] },
   { id: 2, label: "大師篇", emoji: "🚀", color: "#CE82FF", unitRange: [66, 99] },
 ];
@@ -100,7 +100,7 @@ function CurrentUnitCard({ unit, stageColor }: { unit: Unit; stageColor: string 
         </div>
 
         {/* Bottom white strip */}
-        <div className="bg-white px-5 py-3 flex items-center justify-between border-t border-[#F0E8E0]">
+        <div className="bg-white px-5 py-3 flex items-center justify-between border-t border-[#E0EAF0]">
           <p className="text-sm text-[#A0907E] font-medium">
             {currentChapter ? (
               <>繼續第{chapterNum}課：<span className="text-[#2D2D2D] font-bold">{currentChapter.title}</span></>
@@ -109,10 +109,7 @@ function CurrentUnitCard({ unit, stageColor }: { unit: Unit; stageColor: string 
             )}
           </p>
           {currentChapter && (
-            <span
-              className="text-white text-xs font-extrabold px-3 py-1.5 rounded-full"
-              style={{ background: stageColor }}
-            >
+            <span className="text-white text-xs font-extrabold px-4 py-2 rounded-full bg-success shadow-[0_3px_0_0_#04B386]">
               繼續 ▶
             </span>
           )}
@@ -144,18 +141,18 @@ function StageSection({
         onClick={() => hasUnits && setExpanded(!expanded)}
         className={`w-full flex items-center gap-3 py-3 group ${!hasUnits ? "opacity-50" : ""}`}
       >
-        <div className="flex-1 h-px bg-[#FFE8D9]" />
+        <div className="flex-1 h-px bg-[#DCEEFB]" />
         <div className="flex items-center gap-2 text-sm font-extrabold" style={{ color: stage.color }}>
           <span>{stage.emoji}</span>
           <span>{stage.label}</span>
           {!hasUnits && <span className="text-xs text-[#C4B5A5] font-medium">（即將推出）</span>}
           {hasUnits && (
-            <span className="text-[#C4B5A5] text-xs transition-transform" style={{ transform: expanded ? "rotate(0deg)" : "rotate(-90deg)" }}>
+            <span className="text-[#C4B5A5] text-xs transition-transform" style={{ transform: expanded ? "rotate(180deg)" : "rotate(0deg)" }}>
               ▼
             </span>
           )}
         </div>
-        <div className="flex-1 h-px bg-[#FFE8D9]" />
+        <div className="flex-1 h-px bg-[#DCEEFB]" />
       </button>
 
       {/* Collapsible unit grid */}
@@ -196,20 +193,20 @@ function UnitCard({ unit, stageColor }: { unit: Unit; stageColor: string }) {
         className="p-3 pb-4 relative overflow-hidden"
         style={{ background: `linear-gradient(135deg, ${stageColor}, ${stageColor}BB)` }}
       >
-        <p className="text-white/60 text-xs font-bold">Unit {unit.sort_order + 1}</p>
+        <p className="text-white/60 text-xs font-bold">單元 {unit.sort_order + 1}</p>
         <span className="text-2xl block mt-1">{unit.emoji}</span>
         <p className="text-white font-extrabold text-sm mt-1 leading-tight line-clamp-2">{unit.title}</p>
       </div>
 
       {/* Bottom section */}
-      <div className="bg-white p-3 border-t border-[#F0E8E0]">
+      <div className="bg-white p-3 border-t border-[#E0EAF0]">
         {isLocked ? (
           <p className="text-xs font-bold text-[#C4B5A5]">🔒 未解鎖</p>
         ) : isComplete ? (
           <p className="text-xs font-bold text-success">✅ 已完成</p>
         ) : (
           <>
-            <div className="h-2 bg-[#FFE8D9] rounded-full overflow-hidden mb-1">
+            <div className="h-2 bg-[#DCEEFB] rounded-full overflow-hidden mb-1">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{ width: `${progress}%`, background: stageColor }}
@@ -307,7 +304,7 @@ export default function CoreCourse() {
             ? `歡迎回來！🎉 連續學習 ${stats.streak} 天了！`
             : "歡迎來到智學AI！🐬 開始你的AI學習之旅吧！"
         }
-        mood={stats?.streak && stats.streak > 1 ? "waving" : "happy"}
+        mood={stats?.streak && stats.streak > 1 ? "waving" : "learning"}
         className="mb-4 animate-slide-up"
       />
 

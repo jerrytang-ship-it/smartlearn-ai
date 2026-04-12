@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --bg-main: #FFF8F0;
+  --bg-main: #F0F7FF;
   --bg-card: #FFFFFF;
-  --accent: #FF6B35;
-  --accent-light: #FF9A5C;
-  --accent-bg: #FFE8D9;
-  --accent-shadow: rgba(255,107,53,0.4);
+  --accent: #2196F3;
+  --accent-light: #64B5F6;
+  --accent-bg: #DCEEFB;
+  --accent-shadow: rgba(33,150,243,0.4);
   --text-primary: #2D2D2D;
   --text-secondary: #8E8E93;
   --text-muted: #C7C7CC;
-  --border: #F0E8E0;
+  --border: #E0EAF0;
   --card-shadow: 0 6px 18px rgba(0,0,0,0.08), 0 3px 0 rgba(0,0,0,0.04);
 }
 
@@ -28,11 +28,11 @@ body {
     @apply relative font-extrabold rounded-2xl px-6 py-3 text-white transition-all active:translate-y-1 active:shadow-none;
   }
   .btn-3d-primary {
-    background: linear-gradient(135deg, #FF6B35, #FF9A5C);
-    box-shadow: 0 4px 0 0 #E05520, 0 6px 16px rgba(255,107,53,0.3);
+    background: linear-gradient(135deg, #2196F3, #64B5F6);
+    box-shadow: 0 4px 0 0 #1565C0, 0 6px 16px rgba(33,150,243,0.3);
   }
   .btn-3d-primary:active {
-    box-shadow: 0 0 0 0 #E05520;
+    box-shadow: 0 0 0 0 #1565C0;
   }
   .btn-3d-success {
     @apply btn-3d bg-success;
@@ -70,9 +70,9 @@ body {
     box-shadow: none;
   }
   .option-btn-selected {
-    border-color: #FF6B35;
-    background: #FFF3EC;
-    box-shadow: 0 3px 0 0 #FF6B35;
+    border-color: #2196F3;
+    background: #EBF5FF;
+    box-shadow: 0 3px 0 0 #2196F3;
   }
   .option-btn-correct {
     border-color: #06D6A0;

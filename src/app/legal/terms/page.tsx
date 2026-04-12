@@ -59,7 +59,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="font-extrabold text-base mb-2">10. 聯絡我們</h2>
-          <p>如有任何問題，請電郵至：<a href="mailto:support@smartlearn-ai.com" className="text-[#FF6B35] font-bold">support@smartlearn-ai.com</a></p>
+          <p>如有任何問題，請電郵至：<a href="mailto:support@smartlearn-ai.com" className="text-[#2196F3] font-bold">support@smartlearn-ai.com</a></p>
         </section>
       </div>
     </LegalPageLayout>

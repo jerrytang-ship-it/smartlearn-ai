@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import LearnTab from "@/components/LearnTab";
 import ChapterMap from "@/components/ChapterMap";
-import Mascot from "@/components/Mascot";
+import { MascotBubble } from "@/components/Mascot";
 
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -23,7 +23,7 @@ export default function Home() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Mascot size={80} mood="thinking" />
+        <MascotBubble message="載入中..." mood="thinking" mascotSize={64} />
       </div>
     }>
       <HomeContent />

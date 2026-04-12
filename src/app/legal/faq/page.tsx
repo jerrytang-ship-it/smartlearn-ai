@@ -56,7 +56,7 @@ export default function FAQPage() {
     <LegalPageLayout title="❓ 常見問題">
       <div className="space-y-4">
         {faqs.map((faq, idx) => (
-          <div key={idx} className="border-b border-[#F0E8E0] pb-3 last:border-0">
+          <div key={idx} className="border-b border-[#E0EAF0] pb-3 last:border-0">
             <p className="font-extrabold text-sm text-[#2D2D2D] mb-1.5">
               Q{idx + 1}. {faq.q}
             </p>

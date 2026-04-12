@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/lib/user";
 import Link from "next/link";
-import Mascot from "./Mascot";
+import Mascot, { MascotBubble } from "./Mascot";
 
 interface Challenge {
   id: number;
@@ -21,10 +21,10 @@ interface ChallengeRecord {
 }
 
 const categories = [
-  { key: "ai_in" as const, label: "AI in...", emoji: "🌍", color: "#FF6B35", filterLabel: "🌍 AI in" },
-  { key: "history" as const, label: "AI History 101", emoji: "📜", color: "#1CB0F6", filterLabel: "📜 歷史" },
-  { key: "who_am_i" as const, label: "Who Am I?", emoji: "🕵️", color: "#CE82FF", filterLabel: "🕵️ 我係誰" },
-  { key: "odd_one" as const, label: "Find the Odd One", emoji: "🔎", color: "#58CC02", filterLabel: "🔎 奇怪嗰個" },
+  { key: "ai_in" as const, label: "AI 通識", emoji: "🌍", color: "#FF6B35", filterLabel: "🌍 AI 通識" },
+  { key: "history" as const, label: "AI 歷史館", emoji: "📜", color: "#F59E0B", filterLabel: "📜 AI 歷史館" },
+  { key: "who_am_i" as const, label: "猜猜我是誰", emoji: "🕵️", color: "#CE82FF", filterLabel: "🕵️ 猜猜我是誰" },
+  { key: "odd_one" as const, label: "搵出異類", emoji: "🔎", color: "#EC4899", filterLabel: "🔎 搵出異類" },
 ];
 
 function getCategoryInfo(key: string) {
@@ -41,7 +41,7 @@ function formatDate(dateStr: string) {
 function TodayHeroCard({ challenge, completed, score }: { challenge: Challenge | null; completed: boolean; score: number }) {
   if (!challenge) {
     return (
-      <div className="bg-white border-2 border-[#F0E8E0] rounded-[22px] p-6 text-center mb-4">
+      <div className="bg-white border-2 border-[#E0EAF0] rounded-[22px] p-6 text-center mb-4">
         <Mascot size={80} mood="thinking" />
         <p className="text-[#A0907E] mt-3 font-medium">今日暫時沒有挑戰，明天再來！</p>
       </div>
@@ -87,15 +87,14 @@ function TodayHeroCard({ challenge, completed, score }: { challenge: Challenge |
         </div>
 
         {/* Bottom strip */}
-        <div className="bg-white px-5 py-3 flex items-center justify-between border-t border-[#F0E8E0]">
+        <div className="bg-white px-5 py-3 flex items-center justify-between border-t border-[#E0EAF0]">
           <div className="flex items-center gap-2 text-[#A0907E] text-xs font-medium">
             <span>{cat.emoji}</span>
             <span>{completed ? "你已經完成今日挑戰！" : "4題 · 約3分鐘 · 每日更新"}</span>
           </div>
           <Link
             href={`/challenge/${challenge.id}`}
-            className="text-white text-xs font-extrabold px-3 py-1.5 rounded-full whitespace-nowrap"
-            style={{ background: cat.color }}
+            className="text-white text-xs font-extrabold px-4 py-2 rounded-full whitespace-nowrap bg-success shadow-[0_3px_0_0_#04B386]"
           >
             {completed ? "🔄 重做" : "立即開始 ▶"}
           </Link>
@@ -154,7 +153,7 @@ function PastChallengeItem({ challenge, record }: { challenge: Challenge; record
       className={`flex items-center gap-3 p-3 rounded-2xl mb-2 border-2 transition-all ${
         completed
           ? "bg-success/5 border-success/20"
-          : "bg-white border-[#F0E8E0]"
+          : "bg-white border-[#E0EAF0]"
       }`}
     >
       {/* Category icon */}
@@ -183,7 +182,7 @@ function PastChallengeItem({ challenge, record }: { challenge: Challenge; record
         )}
         <Link
           href={`/challenge/${challenge.id}`}
-          className="text-xs font-bold text-[#C4B5A5] bg-[#FFE8D9] px-2.5 py-1 rounded-full"
+          className="text-xs font-bold text-white bg-success px-3 py-1.5 rounded-full shadow-[0_2px_0_0_#04B386]"
         >
           重玩
         </Link>
@@ -261,7 +260,7 @@ export default function DailyChallenge() {
   if (loading || userLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <Mascot size={80} mood="thinking" />
+        <MascotBubble message="載入中..." mood="thinking" mascotSize={64} />
       </div>
     );
   }

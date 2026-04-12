@@ -25,7 +25,7 @@ export default function LevelUpModal({
 
         {/* Title */}
         <div className="relative z-10">
-          <p className="text-sm font-bold text-[#FF6B35] uppercase tracking-wider">Level Up!</p>
+          <p className="text-sm font-bold text-[#2196F3] uppercase tracking-wider">Level Up!</p>
           <h2 className="text-3xl font-extrabold text-[#2D2D2D] mt-1">升級喇！🎉</h2>
           <p className="text-[#A0907E] mt-2 text-sm font-medium">你已經升到</p>
 
@@ -34,8 +34,8 @@ export default function LevelUpModal({
             <div
               className="relative w-28 h-28 rounded-full flex items-center justify-center shadow-2xl"
               style={{
-                background: "linear-gradient(135deg, #FF6B35, #FF9A5C, #FFB347)",
-                boxShadow: "0 8px 24px rgba(255,107,53,0.5)",
+                background: "linear-gradient(135deg, #2196F3, #64B5F6, #90CAF9)",
+                boxShadow: "0 8px 24px rgba(33,150,243,0.5)",
               }}
             >
               <div className="text-center">
@@ -51,8 +51,8 @@ export default function LevelUpModal({
             onClick={onClose}
             className="w-full py-3.5 rounded-[16px] font-extrabold text-white text-base transition-all active:translate-y-1"
             style={{
-              background: "linear-gradient(135deg, #FF6B35, #FF9A5C)",
-              boxShadow: "0 4px 0 0 #E05520, 0 6px 16px rgba(255,107,53,0.3)",
+              background: "linear-gradient(135deg, #2196F3, #64B5F6)",
+              boxShadow: "0 4px 0 0 #1565C0, 0 6px 16px rgba(33,150,243,0.3)",
             }}
           >
             繼續 ▶

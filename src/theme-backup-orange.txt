@@ -1,0 +1,13 @@
+ORANGE THEME BACKUP — revert to these values if needed
+bg-main: #FFF8F0
+accent: #FF6B35
+accent-light: #FF9A5C
+accent-bg: #FFE8D9
+accent-shadow: rgba(255,107,53,0.4)
+border: #F0E8E0
+btn gradient: linear-gradient(135deg, #FF6B35, #FF9A5C)
+btn shadow: 0 4px 0 0 #E05520
+option-selected border: #FF6B35
+option-selected bg: #FFF3EC
+pill-bg: #FFE8D9
+pill-active: #FF6B35

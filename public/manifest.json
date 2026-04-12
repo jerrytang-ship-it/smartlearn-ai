@@ -1,0 +1,17 @@
+{
+  "name": "智學AI",
+  "short_name": "智學AI",
+  "description": "專為香港10-13歲學生設計的AI素養互動學習平台",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F0F7FF",
+  "theme_color": "#2196F3",
+  "icons": [
+    {
+      "src": "/app_logo/app_logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -31,7 +31,7 @@ export interface Question {
 
 function ProgressBar({ current, total }: { current: number; total: number }) {
   return (
-    <div className="h-3 bg-[#FFF8F0] rounded-full overflow-hidden border border-[#F0E8E0]">
+    <div className="h-3 bg-[#F0F7FF] rounded-full overflow-hidden border border-[#E0EAF0]">
       <div
         className="h-full bg-primary rounded-full transition-all duration-500"
         style={{ width: `${((current + 1) / total) * 100}%` }}
@@ -62,7 +62,7 @@ function FeedbackBox({ correct, explanation }: { correct: boolean; explanation: 
     <div className={`rounded-2xl p-4 animate-slide-up ${correct ? "bg-success/10 border-2 border-success/20" : "bg-accent/10 border-2 border-accent/20"}`}>
       <MascotBubble
         message={explanation}
-        mood={correct ? "celebrating" : "encouraging"}
+        mood={correct ? "celebrating" : "learning"}
         mascotSize={40}
       />
     </div>
@@ -77,7 +77,7 @@ function ConfirmButton({ show, onClick }: { show: boolean; onClick: () => void }
     <button
       onClick={onClick}
       className="w-full py-3.5 rounded-[16px] font-extrabold text-white text-base transition-all active:translate-y-1 active:shadow-none animate-slide-up"
-      style={{ background: "linear-gradient(135deg, #FF6B35, #FF9A5C)", boxShadow: "0 4px 0 0 #E05520, 0 6px 16px rgba(255,107,53,0.3)" }}
+      style={{ background: "linear-gradient(135deg, #2196F3, #64B5F6)", boxShadow: "0 4px 0 0 #1565C0, 0 6px 16px rgba(33,150,243,0.3)" }}
     >
       確認 ✓
     </button>
@@ -127,8 +127,8 @@ function MCQQuestion({
                 <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-extrabold ${
                   answered && option.is_correct ? "border-success bg-success text-white"
                     : answered && option.id === selected ? "border-accent bg-accent text-white"
-                    : option.id === selected ? "border-[#FF6B35] text-[#FF6B35]"
-                    : "border-[#F0E8E0] text-[#C4B5A5]"
+                    : option.id === selected ? "border-[#2196F3] text-[#2196F3]"
+                    : "border-[#E0EAF0] text-[#C4B5A5]"
                 }`}>
                   {answered && option.is_correct ? "✓" : answered && option.id === selected ? "✗" : String.fromCharCode(65 + idx)}
                 </div>
@@ -186,13 +186,13 @@ function TrueFalseQuestion({
         {[true, false].map((val) => {
           const label = val ? "正確" : "錯誤";
           const isThisCorrect = val === correctValue;
-          let style = "flex-1 p-6 rounded-2xl text-center border-2 border-[#F0E8E0] bg-white shadow-[0_4px_0_0_#F0E8E0] active:translate-y-1 active:shadow-none transition-all";
+          let style = "flex-1 p-6 rounded-2xl text-center border-2 border-[#E0EAF0] bg-white shadow-[0_4px_0_0_#E0EAF0] active:translate-y-1 active:shadow-none transition-all";
           if (answered && isThisCorrect) {
             style = "flex-1 p-6 rounded-2xl text-center border-2 border-success bg-success/10 shadow-[0_4px_0_0_#04B386]";
           } else if (answered && !isThisCorrect && selected === label) {
             style = "flex-1 p-6 rounded-2xl text-center border-2 border-accent bg-accent/10 shadow-[0_4px_0_0_#D01070]";
           } else if (!answered && selected === label) {
-            style = "flex-1 p-6 rounded-2xl text-center border-2 border-[#FF6B35] bg-[#FFF3EC] shadow-[0_4px_0_0_#FF6B35]";
+            style = "flex-1 p-6 rounded-2xl text-center border-2 border-[#2196F3] bg-[#EBF5FF] shadow-[0_4px_0_0_#2196F3]";
           }
           return (
             <button key={val.toString()} onClick={() => handleSelect(val)} className={style}>
@@ -243,7 +243,7 @@ function FillBlankQuestion({
   return (
     <div className="space-y-4">
       {/* Sentence with blank */}
-      <div className="bg-white rounded-2xl p-5 border-2 border-[#F0E8E0]">
+      <div className="bg-white rounded-2xl p-5 border-2 border-[#E0EAF0]">
         <p className="text-lg font-bold leading-relaxed">
           {parts[0]}
           <span className={`inline-block min-w-[80px] mx-1 px-3 py-1 rounded-xl border-2 border-dashed text-center ${
@@ -264,13 +264,13 @@ function FillBlankQuestion({
       {/* Options as pills */}
       <div className="grid grid-cols-2 gap-3">
         {question.options.map((option) => {
-          let style = "p-3 rounded-2xl text-center border-2 border-[#F0E8E0] bg-white shadow-[0_3px_0_0_#F0E8E0] active:translate-y-0.5 active:shadow-none transition-all font-bold";
+          let style = "p-3 rounded-2xl text-center border-2 border-[#E0EAF0] bg-white shadow-[0_3px_0_0_#E0EAF0] active:translate-y-0.5 active:shadow-none transition-all font-bold";
           if (answered && option.is_correct) {
             style = "p-3 rounded-2xl text-center border-2 border-success bg-success/10 shadow-[0_3px_0_0_#04B386] font-bold text-success";
           } else if (answered && option.id === selected && !option.is_correct) {
             style = "p-3 rounded-2xl text-center border-2 border-accent bg-accent/10 shadow-[0_3px_0_0_#D01070] font-bold text-accent line-through";
           } else if (!answered && option.id === selected) {
-            style = "p-3 rounded-2xl text-center border-2 border-[#FF6B35] bg-[#FFF3EC] shadow-[0_3px_0_0_#FF6B35] font-bold text-[#FF6B35]";
+            style = "p-3 rounded-2xl text-center border-2 border-[#2196F3] bg-[#EBF5FF] shadow-[0_3px_0_0_#2196F3] font-bold text-[#2196F3]";
           }
 
           return (
@@ -350,8 +350,8 @@ function OrderingQuestion({
                   : isWrongSlot
                   ? "border-accent bg-accent/10"
                   : opt
-                  ? "border-[#FF6B35] bg-[#FFF3EC]"
-                  : "border-dashed border-[#F0E8E0] bg-white"
+                  ? "border-[#2196F3] bg-[#EBF5FF]"
+                  : "border-dashed border-[#E0EAF0] bg-white"
               }`}
             >
               {/* Number badge */}
@@ -361,8 +361,8 @@ function OrderingQuestion({
                   : isWrongSlot
                   ? "bg-accent text-white"
                   : opt
-                  ? "bg-[#FF6B35] text-white"
-                  : "bg-[#F0E8E0] text-[#C4B5A5]"
+                  ? "bg-[#2196F3] text-white"
+                  : "bg-[#E0EAF0] text-[#C4B5A5]"
               }`}>
                 {isCorrectSlot ? "✓" : isWrongSlot ? "✗" : idx + 1}
               </div>
@@ -391,7 +391,7 @@ function OrderingQuestion({
             <button
               key={option.id}
               onClick={() => handleTap(option.id)}
-              className="px-4 py-2.5 rounded-[14px] border-2 border-[#F0E8E0] bg-white shadow-[0_3px_0_0_#F0E8E0] active:translate-y-0.5 active:shadow-none transition-all font-bold text-sm"
+              className="px-4 py-2.5 rounded-[14px] border-2 border-[#E0EAF0] bg-white shadow-[0_3px_0_0_#E0EAF0] active:translate-y-0.5 active:shadow-none transition-all font-bold text-sm"
             >
               {option.option_text}
             </button>
@@ -516,10 +516,10 @@ function MatchQuestion({
                   : isWrongMatch
                   ? "border-accent bg-accent/10"
                   : isActive
-                  ? "border-[#FF6B35] bg-[#FFF3EC] ring-2 ring-[#FF6B35]/30"
+                  ? "border-[#2196F3] bg-[#EBF5FF] ring-2 ring-[#2196F3]/30"
                   : hasAssignment
-                  ? "border-[#FF6B35] bg-[#FFF3EC]"
-                  : "border-[#F0E8E0] bg-white"
+                  ? "border-[#2196F3] bg-[#EBF5FF]"
+                  : "border-[#E0EAF0] bg-white"
               }`}
             >
               {/* Left term (fixed) */}
@@ -539,7 +539,7 @@ function MatchQuestion({
                     <span className={`font-bold text-sm ${
                       isCorrectMatch ? "text-success"
                         : isWrongMatch ? "text-accent"
-                        : "text-[#FF6B35]"
+                        : "text-[#2196F3]"
                     }`}>
                       {getRightTextById(assignedId)}
                     </span>
@@ -550,7 +550,7 @@ function MatchQuestion({
                     {isWrongMatch && <span className="text-accent text-xs">✗</span>}
                   </div>
                 ) : (
-                  <span className={`text-sm ${isActive ? "text-[#FF6B35] font-bold" : "text-[#C4B5A5]"}`}>
+                  <span className={`text-sm ${isActive ? "text-[#2196F3] font-bold" : "text-[#C4B5A5]"}`}>
                     {isActive ? "選擇 ↓" : "點擊配對"}
                   </span>
                 )}
@@ -569,7 +569,7 @@ function MatchQuestion({
               <button
                 key={item.id}
                 onClick={() => handleRightTap(item)}
-                className="px-4 py-2.5 rounded-[14px] border-2 border-[#F0E8E0] bg-white shadow-[0_3px_0_0_#F0E8E0] active:translate-y-0.5 active:shadow-none transition-all font-bold text-sm"
+                className="px-4 py-2.5 rounded-[14px] border-2 border-[#E0EAF0] bg-white shadow-[0_3px_0_0_#E0EAF0] active:translate-y-0.5 active:shadow-none transition-all font-bold text-sm"
               >
                 {item.text}
               </button>
@@ -586,8 +586,8 @@ function MatchQuestion({
 
       {/* Show correct answers if wrong */}
       {answered && !allCorrect && (
-        <div className="bg-[#FF6B35]/5 rounded-2xl p-4 border-2 border-[#FF6B35]/10">
-          <p className="text-xs font-bold text-[#FF6B35] mb-2">正確配對：</p>
+        <div className="bg-[#2196F3]/5 rounded-2xl p-4 border-2 border-[#2196F3]/10">
+          <p className="text-xs font-bold text-[#2196F3] mb-2">正確配對：</p>
           <div className="space-y-1">
             {pairs.map((p) => (
               <p key={p.id} className="text-sm text-[#2D2D2D]">
@@ -616,7 +616,7 @@ function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] text-center px-6">
       <div className="mb-4 animate-bounce-in">
-        <Mascot size={120} mood={passed ? "celebrating" : "encouraging"} />
+        <Mascot size={120} mood={passed ? "proud" : "encouraging"} />
       </div>
       <h2 className="text-3xl font-extrabold mb-1 animate-slide-up">
         {isPractice || isReview
@@ -626,8 +626,8 @@ function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice
       <p className="text-[#A0907E] mb-6 font-medium">你答對了 {score}/{total} 題</p>
 
       {isPractice || isReview ? (
-        <div className="bg-[#FFE8D9] border-2 border-[#FF6B35]/20 rounded-3xl p-6 mb-6 w-full max-w-xs animate-bounce-in">
-          <p className="text-base font-bold text-[#FF6B35]">溫馨提示：XP 只會喺第一次完成課堂時獲得</p>
+        <div className="bg-[#DCEEFB] border-2 border-[#2196F3]/20 rounded-3xl p-6 mb-6 w-full max-w-xs animate-bounce-in">
+          <p className="text-base font-bold text-[#2196F3]">溫馨提示：XP 只會喺第一次完成課堂時獲得</p>
         </div>
       ) : (
         <div className="bg-xp/20 border-2 border-xp rounded-3xl p-6 mb-6 w-full max-w-xs shadow-[0_4px_0_0_#F5B800] animate-bounce-in">
@@ -937,7 +937,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
     const canResume = savedIdx < savedQOrder.length && savedQOrder.length > 0;
 
     return (
-      <div className="min-h-screen bg-[#FFF8F0] flex flex-col items-center justify-center px-6 text-center">
+      <div className="min-h-screen bg-[#F0F7FF] flex flex-col items-center justify-center px-6 text-center">
         <Mascot size={100} mood="waving" />
         <h2 className="text-xl font-extrabold text-[#2D2D2D] mt-4 mb-2">歡迎返嚟！</h2>
         <p className="text-[#A0907E] mb-1">
@@ -989,7 +989,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
               setShowResume(false);
               await clearProgress();
             }}
-            className="w-full max-w-xs py-3 rounded-2xl border-2 border-[#F0E8E0] text-[#A0907E] font-bold"
+            className="w-full max-w-xs py-3 rounded-2xl border-2 border-[#E0EAF0] text-[#A0907E] font-bold"
           >
             重新開始
           </button>
@@ -1040,7 +1040,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   const isInRetrySection = currentIndex >= originalCount;
 
   return (
-    <div className="min-h-screen bg-[#FFF8F0]">
+    <div className="min-h-screen bg-[#F0F7FF]">
       {/* XP fly animation — only on first playthrough */}
       {showXP && <XPAnimation xp={xpPerQuestion} trigger={xpTrigger} />}
 
@@ -1055,7 +1055,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
         />
       )}
 
-      <div className="sticky top-0 bg-[#FFF8F0] z-40 px-4 pt-4 pb-3 border-b-2 border-[#F0E8E0]">
+      <div className="sticky top-0 bg-[#F0F7FF] z-40 px-4 pt-4 pb-3 border-b-2 border-[#E0EAF0]">
         <div className="flex items-center gap-3 mb-1">
           <Link href="/" className="text-[#C4B5A5] hover:text-[#A0907E] active:scale-90 transition-all">
             <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -1101,10 +1101,10 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
               size={52}
               mood={
                 showNext
-                  ? (wrongIds.includes(question.id) ? "encouraging" : "celebrating")
+                  ? (wrongIds.includes(question.id) ? "encouraging" : combo >= 5 ? "surprised" : "celebrating")
                   : question.type === "ordering" || question.type === "match"
                   ? "thinking"
-                  : "happy"
+                  : "waving"
               }
             />
           </div>

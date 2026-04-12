@@ -92,7 +92,7 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="font-extrabold text-base mb-2">10. 聯絡我們</h2>
-          <p>如有私隱相關問題或要求，請電郵至：<a href="mailto:privacy@smartlearn-ai.com" className="text-[#FF6B35] font-bold">privacy@smartlearn-ai.com</a></p>
+          <p>如有私隱相關問題或要求，請電郵至：<a href="mailto:privacy@smartlearn-ai.com" className="text-[#2196F3] font-bold">privacy@smartlearn-ai.com</a></p>
         </section>
       </div>
     </LegalPageLayout>

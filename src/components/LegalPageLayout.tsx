@@ -22,7 +22,7 @@ export default function LegalPageLayout({
         <h1 className="text-xl font-extrabold text-[#2D2D2D]">{title}</h1>
       </div>
 
-      <div className="bg-white rounded-2xl p-5 border border-[#F0E8E0] shadow-sm prose-sm max-w-none">
+      <div className="bg-white rounded-2xl p-5 border border-[#E0EAF0] shadow-sm prose-sm max-w-none">
         {children}
       </div>
     </div>

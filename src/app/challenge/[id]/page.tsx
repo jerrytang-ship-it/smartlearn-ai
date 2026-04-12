@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/lib/user";
 import LessonPlayer, { type Question } from "@/components/LessonPlayer";
-import Mascot from "@/components/Mascot";
+import Mascot, { MascotBubble } from "@/components/Mascot";
 import Link from "next/link";
 
 export default function ChallengePage() {
@@ -66,7 +66,7 @@ export default function ChallengePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Mascot size={80} mood="thinking" />
+        <MascotBubble message="載入中..." mood="thinking" mascotSize={64} />
       </div>
     );
   }
