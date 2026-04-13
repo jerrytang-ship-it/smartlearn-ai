@@ -201,6 +201,24 @@ export default function DailyChallenge() {
   const [records, setRecords] = useState<Map<number, ChallengeRecord>>(new Map());
   const [activeCategory, setActiveCategory] = useState("ai_in");
   const [loading, setLoading] = useState(true);
+  const [showBanner, setShowBanner] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const count = parseInt(localStorage.getItem("dc_banner_views") || "0", 10);
+    return count < 3;
+  });
+
+  const dismissBanner = () => {
+    setShowBanner(false);
+    localStorage.setItem("dc_banner_views", "999");
+  };
+
+  // Track banner view count
+  useEffect(() => {
+    const count = parseInt(localStorage.getItem("dc_banner_views") || "0", 10);
+    if (count < 3) {
+      localStorage.setItem("dc_banner_views", String(count + 1));
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -269,6 +287,22 @@ export default function DailyChallenge() {
 
   return (
     <div className="px-4 pt-2">
+      {/* Intro banner */}
+      {showBanner && (
+        <div className="relative bg-white rounded-2xl p-4 mb-4 border-l-4 border-[#2196F3] shadow-sm animate-slide-up">
+          <button
+            onClick={dismissBanner}
+            className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#E0EAF0] flex items-center justify-center text-[#A0907E] text-xs"
+          >
+            ✕
+          </button>
+          <p className="font-extrabold text-sm text-[#2D2D2D] mb-1.5">🐬 每日都有新嘢玩！</p>
+          <p className="text-xs text-[#A0907E] leading-relaxed">
+            四大類別輪流出場 — 🌍 AI 通識 · 📜 AI 歷史館 · 🕵️ 猜猜我是誰 · 🔎 搵出異類。試下每日都挑戰吧！
+          </p>
+        </div>
+      )}
+
       {/* Today's challenge */}
       <TodayHeroCard
         challenge={todayChallenge}
