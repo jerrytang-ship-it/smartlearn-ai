@@ -293,7 +293,7 @@ export default function CoreCourse() {
   }));
 
   // Determine which stage the user is currently in
-  const currentStageIndex = stages.indexOf(currentStage);
+  const currentStageIndex = stages.findIndex((s) => s.label === currentStage.label);
 
   return (
     <div className="px-4 pt-2">

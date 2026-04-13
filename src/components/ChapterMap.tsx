@@ -211,17 +211,17 @@ function LockedUnitView({ unit, index, prevUnitTitle, prevRemaining }: {
         className="relative rounded-3xl py-8 px-4 overflow-hidden"
         style={{ background: `linear-gradient(180deg, ${getTheme(index).from}05, ${getTheme(index).from}10, ${getTheme(index).from}05)` }}
       >
-        <div className="opacity-20 pointer-events-none flex flex-col items-center">
+        <div className="pointer-events-none flex flex-col items-center">
           {unit.chapters.map((chapter, idx) => (
-            <div key={chapter.id}>
+            <div key={idx}>
               {idx > 0 && <PathConnector />}
               <div className="py-3 flex flex-col items-center">
-                <div className="w-[72px] h-[72px] rounded-full bg-[#DCEEFB] flex items-center justify-center">
-                  <svg className="w-6 h-6 text-[#C4B5A5]" fill="currentColor" viewBox="0 0 24 24">
+                <div className="w-[72px] h-[72px] rounded-full bg-[#DCEEFB] flex items-center justify-center opacity-50">
+                  <svg className="w-6 h-6 text-[#8BA8C4]" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
                   </svg>
                 </div>
-                <p className="mt-2 text-sm font-bold text-[#C4B5A5] text-center max-w-[100px]">{chapter.title}</p>
+                <p className="mt-2 text-sm font-bold text-[#8BA8C4] text-center max-w-[100px]">{chapter.title}</p>
               </div>
             </div>
           ))}
@@ -280,12 +280,12 @@ function ChapterNode({ chapter, index, theme }: { chapter: Chapter; index: numbe
       </div>
 
       <p className={`mt-2 text-xs font-bold ${
-        isLocked ? "text-[#C4B5A5]" : isComplete ? "text-success/70" : "text-[#A0907E]"
+        isLocked ? "text-[#8BA8C4]" : isComplete ? "text-success/70" : "text-[#A0907E]"
       }`}>
         第 {index + 1} 課
       </p>
       <p className={`text-sm font-bold text-center max-w-[100px] leading-tight ${
-        isLocked ? "text-[#C4B5A5]" : isComplete ? "text-success" : "text-[#2D2D2D]"
+        isLocked ? "text-[#8BA8C4]" : isComplete ? "text-success" : "text-[#2D2D2D]"
       }`}>
         {chapter.title}
       </p>
