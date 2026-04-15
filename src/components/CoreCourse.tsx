@@ -103,14 +103,16 @@ function CurrentUnitCard({ unit, stageColor }: { unit: Unit; stageColor: string 
         <div className="bg-white px-5 py-3 flex items-center justify-between border-t border-[#E0EAF0]">
           <p className="text-sm text-[#A0907E] font-medium">
             {currentChapter ? (
-              <>繼續第{chapterNum}課：<span className="text-[#2D2D2D] font-bold">{currentChapter.title}</span></>
+              completed === 0
+                ? <>第1課：<span className="text-[#2D2D2D] font-bold">{currentChapter.title}</span></>
+                : <>繼續第{chapterNum}課：<span className="text-[#2D2D2D] font-bold">{currentChapter.title}</span></>
             ) : (
               <span className="text-success font-bold">✅ 已完成所有課程</span>
             )}
           </p>
           {currentChapter && (
             <span className="text-white text-xs font-extrabold px-4 py-2 rounded-full bg-success shadow-[0_3px_0_0_#04B386]">
-              繼續 ▶
+              {completed === 0 ? "立即開始 ▶" : "繼續 ▶"}
             </span>
           )}
         </div>

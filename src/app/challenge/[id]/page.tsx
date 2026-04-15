@@ -5,7 +5,8 @@ import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/lib/user";
 import LessonPlayer, { type Question } from "@/components/LessonPlayer";
-import Mascot, { MascotBubble } from "@/components/Mascot";
+import Mascot from "@/components/Mascot";
+import { MascotBubble } from "@/components/Mascot";
 import Link from "next/link";
 
 export default function ChallengePage() {
@@ -14,6 +15,7 @@ export default function ChallengePage() {
   const { user } = useUser();
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [alreadyCompleted, setAlreadyCompleted] = useState(false);
 
   useEffect(() => {
     async function fetchQuestions() {
@@ -47,11 +49,24 @@ export default function ChallengePage() {
       } else {
         setQuestions([]);
       }
+
+      // Check if user already completed this challenge
+      if (user) {
+        const { data: record } = await supabase
+          .from("daily_challenge_records")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("challenge_id", challengeId)
+          .single();
+
+        if (record) setAlreadyCompleted(true);
+      }
+
       setLoading(false);
     }
 
     fetchQuestions();
-  }, [challengeId]);
+  }, [challengeId, user]);
 
   const handleComplete = async (score: number) => {
     if (!user) return;
@@ -81,5 +96,6 @@ export default function ChallengePage() {
     );
   }
 
-  return <LessonPlayer preloadedQuestions={questions} isReview onComplete={handleComplete} />;
+  // First time: earn XP (isReview=false). Already completed: no XP (isReview=true).
+  return <LessonPlayer preloadedQuestions={questions} isReview={alreadyCompleted} onComplete={handleComplete} />;
 }
