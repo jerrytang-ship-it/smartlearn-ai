@@ -26,6 +26,7 @@ export default function LearnTab() {
             🎓 核心課程
           </button>
           <button
+            data-tutorial="tutorial-daily-tab"
             onClick={() => setActiveTab("daily")}
             className={`flex-1 py-2.5 rounded-[14px] text-sm font-extrabold transition-all relative ${
               activeTab === "daily"

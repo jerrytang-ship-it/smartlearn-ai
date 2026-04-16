@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import TopBar from "@/components/TopBar";
 import BottomNav from "@/components/BottomNav";
+import TutorialOverlay from "@/components/TutorialOverlay";
 import { UserProvider } from "@/lib/user";
 
 export const metadata: Metadata = {
@@ -40,6 +41,7 @@ export default function RootLayout({
             {children}
           </main>
           <BottomNav />
+          <TutorialOverlay />
         </UserProvider>
       </body>
     </html>

@@ -76,7 +76,7 @@ function CurrentUnitCard({ unit, stageColor }: { unit: Unit; stageColor: string 
   const chapterNum = currentChapter ? currentChapter.sort_order + 1 : completed + 1;
 
   return (
-    <Link href={`/?unit=${unit.id}`} className="block mb-6 active:scale-[0.98] transition-transform">
+    <Link href={`/?unit=${unit.id}`} className="block mb-6 active:scale-[0.98] transition-transform" data-tutorial="tutorial-hero-card">
       <div className="rounded-[22px] overflow-hidden shadow-lg">
         {/* Top gradient section */}
         <div
@@ -222,7 +222,11 @@ function UnitCard({ unit, stageColor }: { unit: Unit; stageColor: string }) {
   );
 
   return (
-    <Link href={`/?unit=${unit.id}`} className="block active:scale-95 transition-transform">
+    <Link
+      href={`/?unit=${unit.id}`}
+      className="block active:scale-95 transition-transform"
+      {...(unit.sort_order === 0 ? { "data-tutorial": "tutorial-first-unit" } : {})}
+    >
       {card}
     </Link>
   );
@@ -307,7 +311,7 @@ export default function CoreCourse() {
             : "歡迎來到智學AI！🐬 開始你的AI學習之旅吧！"
         }
         mood={stats?.streak && stats.streak > 1 ? "waving" : "learning"}
-        className="mb-4 animate-slide-up"
+        className="mb-4 animate-slide-up" data-tutorial="tutorial-mascot-welcome"
       />
 
       {/* Current unit card (pinned) */}
@@ -316,14 +320,16 @@ export default function CoreCourse() {
       )}
 
       {/* Stage sections */}
-      {unitsByStage.map(({ stage, units: stageUnits }, idx) => (
-        <StageSection
-          key={stage.label}
-          stage={stage}
-          units={stageUnits}
-          defaultExpanded={idx === currentStageIndex}
-        />
-      ))}
+      <div data-tutorial="tutorial-unit-grid">
+        {unitsByStage.map(({ stage, units: stageUnits }, idx) => (
+          <StageSection
+            key={stage.label}
+            stage={stage}
+            units={stageUnits}
+            defaultExpanded={idx === currentStageIndex}
+          />
+        ))}
+      </div>
     </div>
   );
 }

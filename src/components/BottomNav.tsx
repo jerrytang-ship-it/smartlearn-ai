@@ -46,6 +46,7 @@ export default function BottomNav() {
             <Link
               key={tab.href}
               href={tab.href}
+              data-tutorial={tab.href === "/leaderboard" ? "tutorial-nav-leaderboard" : tab.href === "/profile" ? "tutorial-nav-profile" : undefined}
               className={`flex-1 flex flex-col items-center py-2 pt-3 transition-all ${
                 active ? "text-[#2196F3]" : "text-[#C7C7CC]"
               }`}

@@ -19,7 +19,7 @@ export default function TopBar() {
         </div>
 
         {!loading && stats && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" data-tutorial="tutorial-stats-pills">
             <div className="flex items-center gap-1 bg-[#2196F3]/12 px-2.5 py-1.5 rounded-full">
               <span className="text-xs font-extrabold text-[#2196F3]">Lv {stats.level}</span>
             </div>
