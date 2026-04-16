@@ -27,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="zh-HK">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="apple-touch-icon" href="/app_logo/app_logo.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="智學AI" />
@@ -35,7 +36,7 @@ export default function RootLayout({
       <body className="antialiased">
         <UserProvider>
           <TopBar />
-          <main className="pt-14 pb-16 max-w-lg mx-auto min-h-screen">
+          <main className="pt-14 pb-24 max-w-lg mx-auto min-h-screen">
             {children}
           </main>
           <BottomNav />

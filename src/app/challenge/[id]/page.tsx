@@ -12,7 +12,7 @@ import Link from "next/link";
 export default function ChallengePage() {
   const params = useParams();
   const challengeId = parseInt(params.id as string, 10);
-  const { user } = useUser();
+  const { user, refreshStats } = useUser();
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [alreadyCompleted, setAlreadyCompleted] = useState(false);
@@ -76,6 +76,7 @@ export default function ChallengePage() {
       score,
       completed_at: new Date().toISOString(),
     }, { onConflict: "user_id,challenge_id" });
+    await refreshStats();
   };
 
   if (loading) {

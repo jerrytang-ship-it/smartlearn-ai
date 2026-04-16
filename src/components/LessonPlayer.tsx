@@ -733,6 +733,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
       if (preloadedQuestions && preloadedQuestions.length > 0) {
         setQuestions(preloadedQuestions);
         setOriginalCount(preloadedQuestions.length);
+        if (stats) setSessionStartXP(stats.xp);
         setLoading(false);
         return;
       }
@@ -857,14 +858,17 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
     setShowNext(true);
 
     if (user && questions[currentIndex]) {
-      await supabase.from("user_answers").insert({
-        user_id: user.id,
-        question_id: qId,
-        selected_option_id: optionId > 0 ? optionId : null,
-        is_correct: correct,
-      });
+      // Only save to user_answers for chapter questions (not daily challenges)
+      if (!preloadedQuestions) {
+        await supabase.from("user_answers").insert({
+          user_id: user.id,
+          question_id: qId,
+          selected_option_id: optionId > 0 ? optionId : null,
+          is_correct: correct,
+        });
+      }
 
-      // Only update DB stats if XP was earned
+      // Update DB stats if XP was earned (works for both chapters and daily challenges)
       if (shouldEarnXP) {
         await supabase.rpc("record_answer", {
           p_user_id: user.id,
@@ -882,7 +886,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
     // If wrong, append the retry
     if (!correct) questionOrder.push(qId);
     saveProgress(currentIndex + 1, newScore, questionOrder, newEarnedIds);
-  }, [user, questions, currentIndex, combo, score, isRetry, saveProgress, originalCount, xpEarnedIds, alreadyCompleted]);
+  }, [user, questions, currentIndex, combo, score, isRetry, saveProgress, originalCount, xpEarnedIds, alreadyCompleted, preloadedQuestions]);
 
   const handleNext = async () => {
     playTap();

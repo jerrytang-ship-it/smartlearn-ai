@@ -38,7 +38,7 @@ export default function BottomNav() {
   if (pathname.startsWith("/lesson") || pathname.startsWith("/review")) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white z-50" style={{ boxShadow: "0 -2px 12px rgba(0,0,0,0.06)" }}>
+    <nav className="fixed bottom-0 left-0 right-0 bg-white z-50 pb-[env(safe-area-inset-bottom)]" style={{ boxShadow: "0 -2px 12px rgba(0,0,0,0.06)" }}>
       <div className="max-w-lg mx-auto flex">
         {tabs.map((tab) => {
           const active = tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);
