@@ -75,34 +75,25 @@ export default function TutorialOverlay() {
     if (typeof window === "undefined") return;
     const done = localStorage.getItem(TUTORIAL_KEY);
     if (!done) {
-      // Small delay to let the page render first
-      setTimeout(() => setShow(true), 800);
+      setTimeout(() => setShow(true), 300);
     }
   }, []);
 
   const updateSpotlight = useCallback(() => {
     if (!show) return;
     const current = steps[step];
-
-    // Small delay to let page render
-    setTimeout(() => {
-      const el = document.querySelector(`[data-tutorial="${current.targetId}"]`);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        // Wait for scroll, then capture position
-        setTimeout(() => {
-          const rect = el.getBoundingClientRect();
-          // Verify element is actually visible (has size)
-          if (rect.width > 0 && rect.height > 0) {
-            setSpotlightRect(rect);
-          } else {
-            setSpotlightRect(null);
-          }
-        }, 500);
+    const el = document.querySelector(`[data-tutorial="${current.targetId}"]`);
+    if (el) {
+      el.scrollIntoView({ block: "center" });
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        setSpotlightRect(rect);
       } else {
         setSpotlightRect(null);
       }
-    }, 100);
+    } else {
+      setSpotlightRect(null);
+    }
   }, [step, show]);
 
   useEffect(() => {

@@ -80,7 +80,7 @@ export default function AchievementsSection({
                   <span className="text-sm font-extrabold text-[#2D2D2D]">{cat.label}</span>
                   <span className="text-xs font-bold text-[#C4B5A5]">{catUnlocked}/{cat.items.length}</span>
                 </div>
-                <span className="text-[#C4B5A5] text-xs transition-transform" style={{ transform: isExpanded ? "rotate(0deg)" : "rotate(-90deg)" }}>
+                <span className="text-[#C4B5A5] text-xs transition-transform" style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>
                   ▼
                 </span>
               </button>
