@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import AnnouncementBanners from "./AnnouncementBanners";
 import { useUser } from "@/lib/user";
 import { MascotBubble } from "./Mascot";
 
@@ -174,6 +175,25 @@ function StageSection({
 
 // ─── Unit Card (grid item) ───
 
+// Desaturate a hex color to create muted/locked version
+function desaturateColor(hex: string): { from: string; to: string } {
+  // Mix the color with grey to desaturate
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const mix = 0.55; // how much grey to mix in
+  const gr = 180;
+  const dr = Math.round(r * (1 - mix) + gr * mix);
+  const dg = Math.round(g * (1 - mix) + gr * mix);
+  const db = Math.round(b * (1 - mix) + gr * mix);
+  const from = `#${dr.toString(16).padStart(2, "0")}${dg.toString(16).padStart(2, "0")}${db.toString(16).padStart(2, "0")}`;
+  const dr2 = Math.round(r * (1 - mix - 0.1) + (gr + 20) * (mix + 0.1));
+  const dg2 = Math.round(g * (1 - mix - 0.1) + (gr + 20) * (mix + 0.1));
+  const db2 = Math.round(b * (1 - mix - 0.1) + (gr + 20) * (mix + 0.1));
+  const to = `#${dr2.toString(16).padStart(2, "0")}${dg2.toString(16).padStart(2, "0")}${db2.toString(16).padStart(2, "0")}`;
+  return { from, to };
+}
+
 function UnitCard({ unit, stageColor }: { unit: Unit; stageColor: string }) {
   const completed = unit.chapters.filter((c) => c.status === "complete").length;
   const total = unit.chapters.length;
@@ -182,28 +202,42 @@ function UnitCard({ unit, stageColor }: { unit: Unit; stageColor: string }) {
   const isLocked = !unit.chapters.some((c) => c.status !== "locked");
   const isCurrent = unit.chapters.some((c) => c.status === "unlocked");
 
+  const lockedColors = desaturateColor(stageColor);
+
   const card = (
     <div
-      className={`rounded-2xl overflow-hidden transition-all ${isCurrent ? "ring-2" : ""}`}
+      className={`rounded-2xl overflow-hidden transition-all ${
+        isCurrent ? "ring-2" : isComplete ? "ring-2 ring-success/40" : ""
+      }`}
       style={{
         ...(isCurrent ? { "--tw-ring-color": stageColor } as React.CSSProperties : {}),
-        boxShadow: "0 6px 18px rgba(0,0,0,0.08), 0 3px 0 rgba(0,0,0,0.04)",
+        boxShadow: isLocked
+          ? "0 4px 12px rgba(0,0,0,0.04), 0 2px 0 rgba(0,0,0,0.02)"
+          : "0 6px 18px rgba(0,0,0,0.08), 0 3px 0 rgba(0,0,0,0.04)",
       }}
     >
       {/* Top section with gradient */}
       <div
-        className="p-3 pb-4 relative overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${stageColor}, ${stageColor}BB)` }}
+        className={`p-3 pb-4 relative overflow-hidden ${isLocked ? "opacity-90" : ""}`}
+        style={{
+          background: isLocked
+            ? `linear-gradient(135deg, ${lockedColors.from}, ${lockedColors.to})`
+            : `linear-gradient(135deg, ${stageColor}, ${stageColor}BB)`,
+        }}
       >
-        <p className="text-white/60 text-xs font-bold">單元 {unit.sort_order + 1}</p>
-        <span className="text-2xl block mt-1">{unit.emoji}</span>
-        <p className="text-white font-extrabold text-sm mt-1 leading-tight line-clamp-2">{unit.title}</p>
+        <p className={`text-xs font-bold ${isLocked ? "text-white/40" : "text-white/60"}`}>
+          單元 {unit.sort_order + 1}
+        </p>
+        <span className={`text-2xl block mt-1 ${isLocked ? "opacity-60 grayscale" : ""}`}>{unit.emoji}</span>
+        <p className={`font-extrabold text-sm mt-1 leading-tight line-clamp-2 ${isLocked ? "text-white/70" : "text-white"}`}>
+          {unit.title}
+        </p>
       </div>
 
       {/* Bottom section */}
-      <div className="bg-white p-3 border-t border-[#E0EAF0]">
+      <div className={`p-3 border-t ${isLocked ? "bg-[#F5F5F5] border-[#E8E8E8]" : isComplete ? "bg-success/5 border-success/20" : "bg-white border-[#E0EAF0]"}`}>
         {isLocked ? (
-          <p className="text-xs font-bold text-[#C4B5A5]">🔒 未解鎖</p>
+          <p className="text-xs font-bold text-[#B0B0B0]">🔒 未解鎖</p>
         ) : isComplete ? (
           <p className="text-xs font-bold text-success">✅ 已完成</p>
         ) : (
@@ -313,6 +347,9 @@ export default function CoreCourse() {
         mood={stats?.streak && stats.streak > 1 ? "waving" : "learning"}
         className="mb-4 animate-slide-up" data-tutorial="tutorial-mascot-welcome"
       />
+
+      {/* Announcement banners */}
+      <AnnouncementBanners page="home" />
 
       {/* Current unit card (pinned) */}
       {currentUnit && (

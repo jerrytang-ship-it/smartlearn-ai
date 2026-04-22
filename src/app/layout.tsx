@@ -3,6 +3,7 @@ import "./globals.css";
 import TopBar from "@/components/TopBar";
 import BottomNav from "@/components/BottomNav";
 import TutorialOverlay from "@/components/TutorialOverlay";
+import MaintenanceScreen from "@/components/MaintenanceScreen";
 import { UserProvider } from "@/lib/user";
 
 export const metadata: Metadata = {
@@ -35,6 +36,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#2196F3" />
       </head>
       <body className="antialiased">
+        <MaintenanceScreen />
         <UserProvider>
           <TopBar />
           <main className="pt-14 pb-24 max-w-lg mx-auto min-h-screen">

@@ -10,7 +10,8 @@
     "sync": "tsx scripts/sync-sheets.ts all",
     "sync:core": "tsx scripts/sync-sheets.ts core",
     "sync:daily": "tsx scripts/sync-sheets.ts daily",
-    "sync:stages": "tsx scripts/sync-sheets.ts stages"
+    "sync:stages": "tsx scripts/sync-sheets.ts stages",
+    "sync:announcements": "tsx scripts/sync-sheets.ts announcements"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.100.1",

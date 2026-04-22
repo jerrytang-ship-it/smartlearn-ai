@@ -75,9 +75,30 @@ export default function TutorialOverlay() {
     if (typeof window === "undefined") return;
     const done = localStorage.getItem(TUTORIAL_KEY);
     if (!done) {
-      setTimeout(() => setShow(true), 300);
+      // Wait for page to fully load before showing tutorial
+      const handleLoad = () => {
+        setTimeout(() => setShow(true), 500);
+      };
+      if (document.readyState === "complete") {
+        handleLoad();
+      } else {
+        window.addEventListener("load", handleLoad);
+        return () => window.removeEventListener("load", handleLoad);
+      }
     }
   }, []);
+
+  // Lock/unlock scrolling when tutorial is active
+  useEffect(() => {
+    if (show) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [show]);
 
   const updateSpotlight = useCallback(() => {
     if (!show) return;

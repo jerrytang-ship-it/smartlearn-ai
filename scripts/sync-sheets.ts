@@ -241,6 +241,43 @@ async function syncStages(sheets: ReturnType<typeof google.sheets>) {
   }
 }
 
+async function syncAnnouncements(sheets: ReturnType<typeof google.sheets>) {
+  console.log("\n📢 Syncing Announcements...");
+  const rows = await readTab(sheets, "Announcements");
+  if (rows.length === 0) {
+    console.log("  ⚠️  No Announcements tab found, skipping");
+    return;
+  }
+
+  // Clear old announcements
+  await supabase.from("announcements").delete().gte("id", 0);
+
+  for (const row of rows) {
+    const announcement = {
+      id: parseIntSafe(row.id),
+      message: row.message,
+      emoji: row.emoji || "📣",
+      start_date: row.start_date,
+      end_date: row.end_date,
+      link_text: row.link_text || null,
+      link_url: row.link_url || null,
+      target_page: row.target_page || "home",
+      style: row.style || "info",
+      sort_order: parseIntSafe(row.sort_order),
+    };
+
+    const { error } = await supabase
+      .from("announcements")
+      .upsert(announcement, { onConflict: "id" });
+
+    if (error) {
+      console.error(`  ❌ Announcement ${announcement.id}: ${error.message}`);
+    } else {
+      console.log(`  ✅ Announcement ${announcement.id}: ${announcement.emoji} ${announcement.message.substring(0, 30)}...`);
+    }
+  }
+}
+
 async function syncDailyChallenges(sheets: ReturnType<typeof google.sheets>) {
   console.log("\n📅 Syncing Daily Challenges...");
   const rows = await readTab(sheets, "DailyChallenges");
@@ -383,10 +420,14 @@ async function main() {
   const syncCore = args.includes("core") || args.includes("all") || args.length === 0;
   const syncDaily = args.includes("daily") || args.includes("all") || args.length === 0;
   const syncStagesOnly = args.includes("stages");
+  const syncAnnouncementsOnly = args.includes("announcements");
 
   const sheets = await getSheets();
 
-  if (syncStagesOnly) {
+  if (syncAnnouncementsOnly) {
+    console.log("\nSyncing: announcements only");
+    await syncAnnouncements(sheets);
+  } else if (syncStagesOnly) {
     console.log("\nSyncing: stages only");
     await supabase.from("stages").delete().gte("id", 0);
     await syncStages(sheets);
@@ -405,6 +446,11 @@ async function main() {
     await syncDailyChallenges(sheets);
     await syncDailyChallengeQuestions(sheets);
     await syncDailyChallengeOptions(sheets);
+  }
+
+  // Sync announcements (always, unless only syncing stages)
+  if (!syncStagesOnly) {
+    await syncAnnouncements(sheets);
   }
 
   // Rebuild progress for all users
