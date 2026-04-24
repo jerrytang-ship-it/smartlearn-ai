@@ -389,9 +389,8 @@ async function rebuildProgress() {
 }
 
 async function clearCoreContent() {
-  console.log("\n🗑️  Clearing core content...");
-  await supabase.from("user_answers").delete().gte("id", 0);
-  await supabase.from("user_progress").delete().gte("id", 0);
+  console.log("\n🗑️  Clearing core content (preserving user progress)...");
+  // NOTE: Do NOT delete user_progress or user_answers — preserve user data
   await supabase.from("question_options").delete().gte("id", 0);
   await supabase.from("questions").delete().gte("id", 0);
   await supabase.from("chapters").delete().gte("id", 0);
