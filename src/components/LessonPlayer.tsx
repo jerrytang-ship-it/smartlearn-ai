@@ -75,7 +75,7 @@ function ConfirmButton({ show, onClick }: { show: boolean; onClick: () => void }
     <button
       onClick={onClick}
       className="w-full py-3.5 rounded-[16px] font-extrabold text-white text-base transition-all active:translate-y-1 active:shadow-none animate-slide-up"
-      style={{ background: "linear-gradient(135deg, #2196F3, #64B5F6)", boxShadow: "0 4px 0 0 #1565C0, 0 6px 16px rgba(33,150,243,0.3)" }}
+      style={{ background: "linear-gradient(135deg, #06D6A0, #04B386)", boxShadow: "0 4px 0 0 #039B70" }}
     >
       確認 ✓
     </button>
@@ -606,9 +606,11 @@ function MatchQuestion({
 
 // ─── Completion Screen ───
 
-function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice }: { score: number; total: number; wrongIds: number[]; isReview?: boolean; unitId?: number; isPractice?: boolean }) {
+function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice, chapterBonus }: { score: number; total: number; wrongIds: number[]; isReview?: boolean; unitId?: number; isPractice?: boolean; chapterBonus?: number }) {
   const percentage = Math.round((score / total) * 100);
-  const xpEarned = score * 15;
+  const questionXp = score * 15;
+  const bonusXp = chapterBonus || 0;
+  const xpEarned = questionXp + bonusXp;
   const passed = percentage >= 60;
 
   return (
@@ -630,7 +632,10 @@ function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice
       ) : (
         <div className="bg-xp/20 border-2 border-xp rounded-3xl p-6 mb-6 w-full max-w-xs shadow-[0_4px_0_0_#F5B800] animate-bounce-in">
           <p className="text-4xl font-extrabold text-xp-dark">+{xpEarned} XP</p>
-          <p className="text-sm text-xp-dark/70 font-bold mt-1">經驗值已獲得！</p>
+          <div className="text-xs text-xp-dark/60 font-bold mt-2 space-y-0.5">
+            <p>答題：{score} × 15 = {questionXp} XP</p>
+            {bonusXp > 0 && <p>完成獎勵：+{bonusXp} XP 🎁</p>}
+          </div>
         </div>
       )}
       <div className="flex gap-4 mb-8 w-full max-w-xs">
@@ -670,6 +675,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   const [loading, setLoading] = useState(true);
   const [alreadyCompleted, setAlreadyCompleted] = useState(false);
   const [unitId, setUnitId] = useState<number | null>(null);
+  const [chapterXpReward, setChapterXpReward] = useState<number>(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [showNext, setShowNext] = useState(false);
@@ -759,14 +765,17 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
         // Capture starting XP for level-up detection
         if (stats) setSessionStartXP(stats.xp);
 
-        // Get unit_id for navigation after completion
+        // Get unit_id and xp_reward for navigation and display after completion
         if (chapterId) {
           const { data: chapterData } = await supabase
             .from("chapters")
-            .select("unit_id")
+            .select("unit_id, xp_reward")
             .eq("id", chapterId)
             .single();
-          if (chapterData) setUnitId(chapterData.unit_id);
+          if (chapterData) {
+            setUnitId(chapterData.unit_id);
+            setChapterXpReward(chapterData.xp_reward || 0);
+          }
         }
 
         if (user && chapterId && !isReview) {
@@ -925,67 +934,98 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
     const savedOrigCount = savedProgress.original_count || originalCount;
     const canResume = savedIdx < savedQOrder.length && savedQOrder.length > 0;
 
+    const progressPercent = savedOrigCount > 0 ? Math.round((Math.min(savedIdx, savedOrigCount) / savedOrigCount) * 100) : 0;
+
     return (
-      <div className="min-h-screen bg-[#F0F7FF] flex flex-col items-center justify-center px-6 text-center">
-        <Mascot size={100} mood="waving" />
-        <h2 className="text-xl font-extrabold text-[#2D2D2D] mt-4 mb-2">歡迎返嚟！</h2>
-        <p className="text-[#A0907E] mb-1">
-          {canResume
-            ? `你上次做到第 ${Math.min(savedIdx, savedOrigCount)}/${savedOrigCount} 題`
-            : `你已完成所有 ${savedOrigCount} 題`
-          }
-        </p>
-        <p className="text-[#A0907E] mb-6">得分：{savedProgress.score}/{savedOrigCount}</p>
+      <div className="min-h-screen bg-[#F0F7FF] flex items-center justify-center px-5">
+        <div className="w-full max-w-sm">
+          {/* Card */}
+          <div className="bg-white rounded-[24px] p-6 text-center" style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.08), 0 4px 0 rgba(0,0,0,0.03)" }}>
+            {/* Mascot */}
+            <div className="mb-3">
+              <Mascot size={90} mood="waving" />
+            </div>
 
-        <button
-          onClick={async () => {
-            if (canResume) {
-              // Rebuild the question list from saved order
-              const allQuestions = questions;
-              const qMap = new Map(allQuestions.map((q) => [q.id, q]));
-              const rebuiltQuestions = savedQOrder
-                .map((id) => qMap.get(id))
-                .filter(Boolean) as Question[];
-
-              if (rebuiltQuestions.length > 0 && savedIdx < rebuiltQuestions.length) {
-                setQuestions(rebuiltQuestions);
-                setCurrentIndex(savedIdx);
-                setScore(savedProgress.score);
-                setOriginalCount(savedOrigCount);
-                setIsRetry(savedIdx >= savedOrigCount);
-                setXpEarnedIds(savedEarnedIds);
-                setShowResume(false);
-                return;
+            <h2 className="text-xl font-extrabold text-[#2D2D2D] mb-1">歡迎返嚟！👋</h2>
+            <p className="text-sm text-[#A0907E] mb-4">
+              {canResume
+                ? `你上次做到第 ${Math.min(savedIdx, savedOrigCount)}/${savedOrigCount} 題`
+                : `你已完成所有 ${savedOrigCount} 題`
               }
-            }
-            // Fallback: start fresh
-            setCurrentIndex(0);
-            setScore(0);
-            setXpEarnedIds([]);
-            setShowResume(false);
-            await clearProgress();
-          }}
-          className="btn-3d-primary w-full max-w-xs text-lg mb-3"
-        >
-          {canResume ? "繼續上次進度 ▶" : "重新開始 ▶"}
-        </button>
-        {canResume && alreadyCompleted && (
-          <button
-            onClick={async () => {
-              setCurrentIndex(0);
-              setScore(0);
-              setXpEarnedIds([]);
-              setShowResume(false);
-              await clearProgress();
-            }}
-            className="w-full max-w-xs py-3 rounded-2xl border-2 border-[#E0EAF0] text-[#A0907E] font-bold"
-          >
-            重新開始
-          </button>
-        )}
-        <Link href="/" className="text-sm text-[#C4B5A5] mt-4 font-medium">
-          返回課程
-        </Link>
+            </p>
+
+            {/* Progress bar */}
+            {canResume && (
+              <div className="mb-5">
+                <div className="flex justify-between text-xs font-bold mb-1">
+                  <span className="text-[#A0907E]">進度</span>
+                  <span className="text-[#2196F3]">{progressPercent}%</span>
+                </div>
+                <div className="h-3 bg-[#DCEEFB] rounded-full overflow-hidden">
+                  <div className="h-full bg-[#2196F3] rounded-full transition-all" style={{ width: `${progressPercent}%` }} />
+                </div>
+                <p className="text-xs text-[#A0907E] mt-1">得分：{savedProgress.score}/{savedOrigCount}</p>
+              </div>
+            )}
+
+            {/* Buttons */}
+            <div className="space-y-3">
+              <button
+                onClick={async () => {
+                  if (canResume) {
+                    const allQuestions = questions;
+                    const qMap = new Map(allQuestions.map((q) => [q.id, q]));
+                    const rebuiltQuestions = savedQOrder
+                      .map((id) => qMap.get(id))
+                      .filter(Boolean) as Question[];
+
+                    if (rebuiltQuestions.length > 0 && savedIdx < rebuiltQuestions.length) {
+                      setQuestions(rebuiltQuestions);
+                      setCurrentIndex(savedIdx);
+                      setScore(savedProgress.score);
+                      setOriginalCount(savedOrigCount);
+                      setIsRetry(savedIdx >= savedOrigCount);
+                      setXpEarnedIds(savedEarnedIds);
+                      setShowResume(false);
+                      return;
+                    }
+                  }
+                  setCurrentIndex(0);
+                  setScore(0);
+                  setXpEarnedIds([]);
+                  setShowResume(false);
+                  await clearProgress();
+                }}
+                className="w-full py-3.5 rounded-[16px] font-extrabold text-white text-base transition-all active:translate-y-1"
+                style={{ background: "linear-gradient(135deg, #06D6A0, #04B386)", boxShadow: "0 4px 0 0 #039B70" }}
+              >
+                {canResume ? "繼續上次進度 ▶" : "重新開始 ▶"}
+              </button>
+
+              {canResume && alreadyCompleted && (
+                <button
+                  onClick={async () => {
+                    setCurrentIndex(0);
+                    setScore(0);
+                    setXpEarnedIds([]);
+                    setShowResume(false);
+                    await clearProgress();
+                  }}
+                  className="w-full py-3 rounded-[16px] border-2 border-[#E0EAF0] text-[#A0907E] font-bold text-sm transition-all active:scale-95"
+                >
+                  重新開始
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Back link */}
+          <div className="text-center mt-4">
+            <Link href="/" className="text-sm text-[#A0907E] font-medium hover:text-[#2D2D2D] transition-colors">
+              ← 返回課程
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
@@ -998,6 +1038,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
       isReview={isReview}
       unitId={unitId || undefined}
       isPractice={alreadyCompleted}
+      chapterBonus={!alreadyCompleted && !isReview ? chapterXpReward : 0}
     />;
   }
 
@@ -1108,7 +1149,8 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
         {showNext && (
           <button
             onClick={handleNext}
-            className="w-full mt-6 btn-3d-primary text-lg animate-bounce-in"
+            className="w-full mt-6 py-3.5 rounded-[16px] font-extrabold text-white text-base transition-all active:translate-y-1 animate-bounce-in"
+            style={{ background: "linear-gradient(135deg, #06D6A0, #04B386)", boxShadow: "0 4px 0 0 #039B70" }}
           >
             {currentIndex + 1 >= questions.length ? "查看結果 🎉" : "下一題 →"}
           </button>

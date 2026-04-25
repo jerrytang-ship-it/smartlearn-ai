@@ -7,8 +7,8 @@ import MaintenanceScreen from "@/components/MaintenanceScreen";
 import { UserProvider } from "@/lib/user";
 
 export const metadata: Metadata = {
-  title: "智學AI — AI素養學習平台",
-  description: "專為香港10-13歲學生設計的AI素養互動學習平台",
+  title: "智學AI — AI學習平台",
+  description: "專為香港9-12歲學生設計的AI互動學習平台",
   manifest: "/manifest.json",
   icons: {
     icon: "/app_logo/app_logo.png",

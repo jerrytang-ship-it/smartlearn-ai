@@ -8,12 +8,12 @@ export default function TermsPage() {
 
         <section>
           <h2 className="font-extrabold text-base mb-2">1. 歡迎使用智學AI</h2>
-          <p>歡迎使用智學AI！本應用程式（「本應用」）由智學AI團隊營運，旨在為香港10-13歲學生提供AI素養教育。使用本應用即代表你同意本條款。</p>
+          <p>歡迎使用智學AI！本應用程式（「本應用」）由智學AI團隊營運，旨在為香港9-12歲學生提供AI教育。使用本應用即代表你同意本條款。</p>
         </section>
 
         <section>
           <h2 className="font-extrabold text-base mb-2">2. 使用年齡</h2>
-          <p>本應用主要針對10-13歲兒童設計。13歲以下兒童須在家長或監護人同意下使用本應用。家長或監護人應監督兒童使用本應用。</p>
+          <p>本應用主要針對9-12歲兒童設計。13歲以下兒童須在家長或監護人同意下使用本應用。家長或監護人應監督兒童使用本應用。</p>
         </section>
 
         <section>

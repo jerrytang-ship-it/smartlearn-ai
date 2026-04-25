@@ -3,7 +3,7 @@ import LegalPageLayout from "@/components/LegalPageLayout";
 const faqs = [
   {
     q: "智學AI係咩？",
-    a: "智學AI係一個專為香港9-12歲學生設計嘅AI素養學習應用程式，用遊戲化方式教小朋友認識人工智能。",
+    a: "智學AI係一個專為香港9-12歲學生設計嘅AI學習應用程式，用遊戲化方式教小朋友認識人工智能。",
   },
   {
     q: "我需要登入先可以用嗎？",
