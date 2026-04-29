@@ -24,7 +24,7 @@ const categories = [
   { key: "ai_in" as const, label: "AI 通識", emoji: "🌍", color: "#FF6B35", filterLabel: "🌍 AI 通識" },
   { key: "history" as const, label: "AI 歷史館", emoji: "📜", color: "#F59E0B", filterLabel: "📜 AI 歷史館" },
   { key: "who_am_i" as const, label: "猜猜我是誰", emoji: "🕵️", color: "#CE82FF", filterLabel: "🕵️ 猜猜我是誰" },
-  { key: "odd_one" as const, label: "搵出異類", emoji: "🔎", color: "#EC4899", filterLabel: "🔎 搵出異類" },
+  { key: "odd_one" as const, label: "找出不同", emoji: "🔎", color: "#EC4899", filterLabel: "🔎 找出不同" },
 ];
 
 function getCategoryInfo(key: string) {
@@ -298,7 +298,7 @@ export default function DailyChallenge() {
           </button>
           <p className="font-extrabold text-sm text-[#2D2D2D] mb-1.5">🐬 每日都有新嘢玩！</p>
           <p className="text-xs text-[#A0907E] leading-relaxed">
-            四大類別輪流出場 — 🌍 AI 通識 · 📜 AI 歷史館 · 🕵️ 猜猜我是誰 · 🔎 搵出異類。試下每日都挑戰吧！
+            四大類別輪流出場 — 🌍 AI 通識 · 📜 AI 歷史館 · 🕵️ 猜猜我是誰 · 🔎 找出不同。試下每日都挑戰吧！
           </p>
         </div>
       )}
