@@ -19,8 +19,8 @@ export default function MaintenanceScreen() {
           <p className="text-xs text-[#C4B5A5]">
             如有緊急查詢，請電郵至
             <br />
-            <a href="mailto:support@smartlearn-ai.com" className="text-[#2196F3] font-bold">
-              support@smartlearn-ai.com
+            <a href="mailto:support@smartlearnaiapp.com" className="text-[#2196F3] font-bold">
+              support@smartlearnaiapp.com
             </a>
           </p>
         </div>

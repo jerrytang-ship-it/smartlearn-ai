@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/lib/user";
+import LoginModal from "./LoginModal";
 import Mascot, { MascotBubble } from "./Mascot";
 
 interface LeaderboardEntry {
@@ -69,6 +70,7 @@ export default function Leaderboard() {
   const [loading, setLoading] = useState(true);
   const [monthlyLoading, setMonthlyLoading] = useState(false);
   const [nameMap, setNameMap] = useState<Map<string, { name: string; level: number; streak: number }>>(new Map());
+  const [showLogin, setShowLogin] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
@@ -85,7 +87,8 @@ export default function Leaderboard() {
 
       const { data: usersData } = await supabase
         .from("users")
-        .select("id, display_name, nickname");
+        .select("id, display_name, nickname, is_anonymous")
+        .eq("is_anonymous", false);
 
       const nickMap = new Map(
         (usersData || []).map((u) => [u.id, u.nickname || u.display_name || "同學仔"])
@@ -115,16 +118,18 @@ export default function Leaderboard() {
         .limit(50);
 
       if (data) {
-        setAllTimeEntries(data.map((d) => {
-          const info = nameMap.get(d.user_id);
-          return {
-            user_id: d.user_id,
-            display_name: info?.name || "同學仔",
-            xp: d.xp,
-            level: info?.level || 1,
-            streak: info?.streak || 0,
-          };
-        }));
+        setAllTimeEntries(data
+          .filter((d) => nameMap.has(d.user_id))
+          .map((d) => {
+            const info = nameMap.get(d.user_id)!;
+            return {
+              user_id: d.user_id,
+              display_name: info.name,
+              xp: d.xp,
+              level: info.level,
+              streak: info.streak,
+            };
+          }));
       }
       setLoading(false);
     }
@@ -143,16 +148,18 @@ export default function Leaderboard() {
       const { data } = await supabase.rpc("get_monthly_xp", { p_month: dateStr });
 
       if (data) {
-        setMonthlyEntries(data.map((d: { user_id: string; monthly_xp: number }) => {
-          const info = nameMap.get(d.user_id);
-          return {
-            user_id: d.user_id,
-            display_name: info?.name || "同學仔",
-            xp: d.monthly_xp,
-            level: info?.level || 1,
-            streak: info?.streak || 0,
-          };
-        }));
+        setMonthlyEntries(data
+          .filter((d: { user_id: string }) => nameMap.has(d.user_id))
+          .map((d: { user_id: string; monthly_xp: number }) => {
+            const info = nameMap.get(d.user_id)!;
+            return {
+              user_id: d.user_id,
+              display_name: info.name,
+              xp: d.monthly_xp,
+              level: info.level,
+              streak: info.streak,
+            };
+          }));
       } else {
         setMonthlyEntries([]);
       }
@@ -206,7 +213,7 @@ export default function Leaderboard() {
             tab === "alltime" ? "bg-white text-[#2D2D2D] shadow-sm" : "text-[#A0907E]"
           }`}
         >
-          🏅 全部時間
+          🏅 歷史排名
         </button>
         <button
           onClick={() => setTab("monthly")}
@@ -214,7 +221,7 @@ export default function Leaderboard() {
             tab === "monthly" ? "bg-white text-[#2D2D2D] shadow-sm" : "text-[#A0907E]"
           }`}
         >
-          📅 每月
+          📅 每月排名
         </button>
       </div>
 
@@ -244,6 +251,17 @@ export default function Leaderboard() {
             </svg>
           </button>
         </div>
+      )}
+
+      {/* Anonymous user login banner */}
+      {user?.isAnonymous && (
+        <button
+          onClick={() => setShowLogin(true)}
+          className="w-full bg-gradient-to-r from-[#64B5F6] to-[#90CAF9] rounded-2xl p-4 mb-5 text-white text-left shadow-[0_4px_0_0_#4A9BE8] active:translate-y-1 active:shadow-none transition-all"
+        >
+          <p className="font-extrabold text-sm">🔒 登入 Google 帳號加入排行榜！</p>
+          <p className="text-white/80 text-xs mt-1">登入後你嘅成績就能夠出現喺排行榜上</p>
+        </button>
       )}
 
       {/* My rank card */}
@@ -288,6 +306,8 @@ export default function Leaderboard() {
           ))}
         </div>
       )}
+
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </div>
   );
 }

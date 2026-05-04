@@ -8,6 +8,8 @@ import Mascot, { MascotBubble } from "./Mascot";
 import ComboCounter from "./ComboCounter";
 import XPAnimation from "./XPAnimation";
 import { playCorrect, playWrong, playCombo, playComplete, playXP, playTap } from "@/lib/sounds";
+import { checkAndAwardCertificates } from "@/lib/certificates";
+import CertificateViewer from "./CertificateViewer";
 
 export interface QuestionOption {
   id: number;
@@ -687,6 +689,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   const [originalCount, setOriginalCount] = useState(0);
   const [isRetry, setIsRetry] = useState(false);
   const [showResume, setShowResume] = useState(false);
+  const [newCertificate, setNewCertificate] = useState<string | null>(null);
   const [savedProgress, setSavedProgress] = useState<{
     current_index: number; score: number; original_count: number;
     question_order: string; xp_earned_ids: string;
@@ -894,6 +897,9 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
         });
         await refreshStats();
         await clearProgress();
+        // Check if a stage was completed → award certificate
+        const certType = await checkAndAwardCertificates(user.id);
+        if (certType) setNewCertificate(certType);
       }
       // Call completion callback (used by daily challenges)
       if (onComplete) {
@@ -920,7 +926,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   if (questions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-6">
-        <MascotBubble message="這個章節暫時還沒有題目，快回去看看其他章節吧！" mood="thinking" mascotSize={64} />
+        <MascotBubble message="呢課暫時未有題目，返去睇吓其他課堂啦！" mood="thinking" mascotSize={64} />
         <Link href="/" className="btn-3d-primary mt-6 text-center">返回</Link>
       </div>
     );
@@ -1031,15 +1037,29 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   }
 
   if (completed) {
-    return <CompletionScreen
-      score={score}
-      total={originalCount}
-      wrongIds={[]}
-      isReview={isReview}
-      unitId={unitId || undefined}
-      isPractice={alreadyCompleted}
-      chapterBonus={!alreadyCompleted && !isReview ? chapterXpReward : 0}
-    />;
+    return (
+      <>
+        <CompletionScreen
+          score={score}
+          total={originalCount}
+          wrongIds={[]}
+          isReview={isReview}
+          unitId={unitId || undefined}
+          isPractice={alreadyCompleted}
+          chapterBonus={!alreadyCompleted && !isReview ? chapterXpReward : 0}
+        />
+        {newCertificate && user && stats && (
+          <CertificateViewer
+            type={newCertificate as "stage_1" | "stage_2" | "stage_3" | "all_complete"}
+            studentName={user.displayName}
+            date={new Date().toLocaleDateString("zh-HK", { year: "numeric", month: "long", day: "numeric" })}
+            chaptersCompleted={stats.chaptersCompleted}
+            xpEarned={stats.xp}
+            onClose={() => setNewCertificate(null)}
+          />
+        )}
+      </>
+    );
   }
 
   const question = questions[currentIndex];

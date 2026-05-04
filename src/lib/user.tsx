@@ -40,6 +40,7 @@ interface UserContextType {
   refreshStats: () => Promise<void>;
   refreshUser: () => Promise<void>;
   loginWithGoogle: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType>({
@@ -49,6 +50,7 @@ const UserContext = createContext<UserContextType>({
   refreshStats: async () => {},
   refreshUser: async () => {},
   loginWithGoogle: async () => {},
+  logout: async () => {},
 });
 
 export function useUser() {
@@ -116,6 +118,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   }, [fetchUser, fetchStats]);
 
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    setUser(null);
+    setStats(null);
+    window.location.href = "/";
+  }, []);
+
   const loginWithGoogle = useCallback(async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -173,7 +183,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [fetchUser, fetchStats]);
 
   return (
-    <UserContext.Provider value={{ user, stats, loading, refreshStats, refreshUser, loginWithGoogle }}>
+    <UserContext.Provider value={{ user, stats, loading, refreshStats, refreshUser, loginWithGoogle, logout }}>
       {children}
     </UserContext.Provider>
   );

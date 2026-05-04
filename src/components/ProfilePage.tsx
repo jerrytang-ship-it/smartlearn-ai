@@ -7,11 +7,12 @@ import LoginModal from "./LoginModal";
 import Mascot, { MascotBubble } from "./Mascot";
 import EditNickname from "./EditNickname";
 import AchievementsSection from "./AchievementsSection";
+import CertificateSection from "./CertificateSection";
 
 export default function ProfilePage() {
   const [showLogin, setShowLogin] = useState(false);
   const [showEditNickname, setShowEditNickname] = useState(false);
-  const { user, stats, loading } = useUser();
+  const { user, stats, loading, logout } = useUser();
 
   if (loading || !user || !stats) {
     return (
@@ -109,7 +110,7 @@ export default function ProfilePage() {
         <div className="bg-white rounded-2xl p-4 border-2 border-primary/20 shadow-[0_3px_0_0] shadow-primary/20">
           <div className="text-3xl mb-1">📚</div>
           <p className="text-2xl font-extrabold text-primary">{stats.chaptersCompleted}</p>
-          <p className="text-xs font-bold text-[#A0907E]">完成章節</p>
+          <p className="text-xs font-bold text-[#A0907E]">完成課堂</p>
         </div>
 
         <div className="bg-white rounded-2xl p-4 border-2 border-success/20 shadow-[0_3px_0_0] shadow-success/20">
@@ -123,6 +124,9 @@ export default function ProfilePage() {
       {/* Achievements */}
       <AchievementsSection stats={stats} accuracy={accuracy} />
 
+      {/* Certificates */}
+      <CertificateSection />
+
       {/* Help & Info section */}
       <div className="bg-white rounded-2xl p-5 border-2 border-[#E0EAF0] shadow-[0_3px_0_0_#E0EAF0] mt-6">
         <h3 className="font-extrabold text-base mb-4 text-[#2D2D2D]">💬 幫助與資訊</h3>
@@ -134,7 +138,7 @@ export default function ProfilePage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </Link>
-          <a href="mailto:support@smartlearn-ai.com" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#DCEEFB] active:scale-95 transition-all">
+          <a href="mailto:support@smartlearnaiapp.com" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#DCEEFB] active:scale-95 transition-all">
             <span className="text-xl">📧</span>
             <p className="flex-1 text-sm font-bold text-[#2D2D2D]">聯絡我哋</p>
             <svg className="w-4 h-4 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -157,6 +161,15 @@ export default function ProfilePage() {
           </Link>
         </div>
       </div>
+
+      {!user.isAnonymous && (
+        <button
+          onClick={logout}
+          className="w-full py-3 rounded-2xl font-bold text-sm text-[#FF6B6B] border-2 border-[#FF6B6B]/30 transition-all active:scale-95 mt-6"
+        >
+          登出帳號
+        </button>
+      )}
 
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
       {showEditNickname && <EditNickname onClose={() => setShowEditNickname(false)} />}

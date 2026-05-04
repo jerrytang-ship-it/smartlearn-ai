@@ -30,10 +30,10 @@ export default function AchievementsSection({
     {
       label: "📚 學習進度",
       items: [
-        { icon: "🌟", name: "初學者", unlocked: stats.chaptersCompleted >= 1, progress: Math.min(stats.chaptersCompleted / 1, 1), detail: `${Math.min(stats.chaptersCompleted, 1)}/1 章節`, colorBg: "bg-xp/20" },
-        { icon: "📖", name: "學習達人", unlocked: stats.chaptersCompleted >= 5, progress: Math.min(stats.chaptersCompleted / 5, 1), detail: `${Math.min(stats.chaptersCompleted, 5)}/5 章節`, colorBg: "bg-xp/20" },
-        { icon: "🎓", name: "知識大師", unlocked: stats.chaptersCompleted >= 10, progress: Math.min(stats.chaptersCompleted / 10, 1), detail: `${Math.min(stats.chaptersCompleted, 10)}/10 章節`, colorBg: "bg-xp/20" },
-        { icon: "🧠", name: "AI專家", unlocked: stats.chaptersCompleted >= 20, progress: Math.min(stats.chaptersCompleted / 20, 1), detail: `${Math.min(stats.chaptersCompleted, 20)}/20 章節`, colorBg: "bg-xp/20" },
+        { icon: "🌟", name: "初學者", unlocked: stats.chaptersCompleted >= 1, progress: Math.min(stats.chaptersCompleted / 1, 1), detail: `${Math.min(stats.chaptersCompleted, 1)}/1 課`, colorBg: "bg-xp/20" },
+        { icon: "📖", name: "學習達人", unlocked: stats.chaptersCompleted >= 5, progress: Math.min(stats.chaptersCompleted / 5, 1), detail: `${Math.min(stats.chaptersCompleted, 5)}/5 課`, colorBg: "bg-xp/20" },
+        { icon: "🎓", name: "知識大師", unlocked: stats.chaptersCompleted >= 10, progress: Math.min(stats.chaptersCompleted / 10, 1), detail: `${Math.min(stats.chaptersCompleted, 10)}/10 課`, colorBg: "bg-xp/20" },
+        { icon: "🧠", name: "AI專家", unlocked: stats.chaptersCompleted >= 20, progress: Math.min(stats.chaptersCompleted / 20, 1), detail: `${Math.min(stats.chaptersCompleted, 20)}/20 課`, colorBg: "bg-xp/20" },
       ],
     },
     {

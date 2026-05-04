@@ -296,6 +296,7 @@ export default function CoreCourse() {
 
       if (unitsData && chaptersData) {
         const progressMap = new Map((progressData || []).map((p) => [p.chapter_id, p.status]));
+
         const mapped: Unit[] = unitsData.map((u) => ({
           ...u,
           chapters: chaptersData
@@ -305,6 +306,22 @@ export default function CoreCourse() {
               status: (progressMap.get(c.id) as Chapter["status"]) || "locked",
             })),
         }));
+
+        // Auto-unlock: first chapter of unit 1 is always unlocked,
+        // and first chapter of next unit unlocks when previous unit is all complete
+        for (let i = 0; i < mapped.length; i++) {
+          const unit = mapped[i];
+          const allLocked = !unit.chapters.some((c) => c.status !== "locked");
+          if (allLocked) {
+            const prevUnit = i > 0 ? mapped[i - 1] : null;
+            const prevComplete = !prevUnit || prevUnit.chapters.every((c) => c.status === "complete");
+            if (i === 0 || prevComplete) {
+              const firstChapter = unit.chapters.find((c) => c.status === "locked");
+              if (firstChapter) firstChapter.status = "unlocked";
+            }
+          }
+        }
+
         setUnits(mapped);
       }
 

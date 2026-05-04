@@ -347,6 +347,21 @@ export default function ChapterMap({ focusUnitId }: { focusUnitId?: number } = {
               status: (progressMap.get(c.id) as Chapter["status"]) || "locked",
             })),
         }));
+
+        // Auto-unlock first chapter of unit 1, and first chapter of next unit when previous is complete
+        for (let i = 0; i < mapped.length; i++) {
+          const unit = mapped[i];
+          const allLocked = !unit.chapters.some((c) => c.status !== "locked");
+          if (allLocked) {
+            const prevUnit = i > 0 ? mapped[i - 1] : null;
+            const prevComplete = !prevUnit || prevUnit.chapters.every((c) => c.status === "complete");
+            if (i === 0 || prevComplete) {
+              const firstChapter = unit.chapters.find((c) => c.status === "locked");
+              if (firstChapter) firstChapter.status = "unlocked";
+            }
+          }
+        }
+
         setUnits(mapped);
 
         // If focusUnitId is set, select that unit; otherwise auto-select current

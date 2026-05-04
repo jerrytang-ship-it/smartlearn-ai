@@ -43,11 +43,11 @@ const faqs = [
   },
   {
     q: "點樣刪除我嘅帳戶？",
-    a: "請電郵 support@smartlearn-ai.com，我哋會喺7日內處理你嘅要求。",
+    a: "請電郵 support@smartlearnaiapp.com，我哋會喺7日內處理你嘅要求。",
   },
   {
     q: "我發現內容有錯誤點算？",
-    a: "請電郵 support@smartlearn-ai.com 通知我哋，我哋會盡快修正！",
+    a: "請電郵 support@smartlearnaiapp.com 通知我哋，我哋會盡快修正！",
   },
 ];
 
