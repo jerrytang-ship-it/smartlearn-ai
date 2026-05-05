@@ -662,7 +662,11 @@ function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice
         </Link>
       )}
 
-      <Link href={unitId ? `/?unit=${unitId}` : "/"} className="btn-3d-primary w-full max-w-xs text-center text-lg">
+      <Link
+        href={unitId ? `/?unit=${unitId}` : "/"}
+        className="w-full max-w-xs text-center text-lg font-extrabold text-white rounded-2xl px-6 py-3 transition-all active:translate-y-1 active:shadow-none"
+        style={{ background: "linear-gradient(135deg, #2196F3, #64B5F6)", boxShadow: "0 4px 0 0 #1565C0" }}
+      >
         繼續
       </Link>
     </div>
@@ -862,6 +866,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
           question_id: qId,
           selected_option_id: optionId > 0 ? optionId : null,
           is_correct: correct,
+          earned_xp: shouldEarnXP,
         });
       }
 

@@ -30,7 +30,7 @@ export default function XPAnimation({ xp, trigger }: XPAnimationProps) {
 
     const t = setTimeout(() => {
       setParticles((prev) => prev.filter((p) => p.id !== id));
-    }, 2000);
+    }, 1200);
 
     return () => clearTimeout(t);
   // ONLY trigger on `trigger` changes — not combo or xp

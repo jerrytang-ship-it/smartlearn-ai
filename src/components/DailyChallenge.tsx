@@ -9,7 +9,7 @@ import Mascot, { MascotBubble } from "./Mascot";
 interface Challenge {
   id: number;
   date: string;
-  category: "ai_in" | "history" | "who_am_i" | "odd_one";
+  category: "ai_in" | "history" | "fun_fact" | "odd_one";
   title_zh: string;
   description_zh: string | null;
 }
@@ -23,7 +23,7 @@ interface ChallengeRecord {
 const categories = [
   { key: "ai_in" as const, label: "AI 通識", emoji: "🌍", color: "#FF6B35", filterLabel: "🌍 AI 通識" },
   { key: "history" as const, label: "AI 歷史館", emoji: "📜", color: "#F59E0B", filterLabel: "📜 AI 歷史館" },
-  { key: "who_am_i" as const, label: "猜猜我是誰", emoji: "🕵️", color: "#CE82FF", filterLabel: "🕵️ 猜猜我是誰" },
+  { key: "fun_fact" as const, label: "AI冷知識", emoji: "💡", color: "#CE82FF", filterLabel: "💡 AI冷知識" },
   { key: "odd_one" as const, label: "找出不同", emoji: "🔎", color: "#EC4899", filterLabel: "🔎 找出不同" },
 ];
 
@@ -174,7 +174,7 @@ function PastChallengeItem({ challenge, record }: { challenge: Challenge; record
       <div className="flex items-center gap-2 flex-shrink-0">
         {completed && (
           <span className="text-xs font-extrabold text-success">
-            {challenge.category === "who_am_i"
+            {challenge.category === "fun_fact"
               ? (record!.score >= 3 ? "✅ 猜中" : "❌ 未猜中")
               : `${record!.score}/4 ${record!.score === 4 ? "✨" : ""}`
             }
@@ -298,7 +298,7 @@ export default function DailyChallenge() {
           </button>
           <p className="font-extrabold text-sm text-[#2D2D2D] mb-1.5">🐬 每日都有新嘢玩！</p>
           <p className="text-xs text-[#A0907E] leading-relaxed">
-            四大類別輪流出場 — 🌍 AI 通識 · 📜 AI 歷史館 · 🕵️ 猜猜我是誰 · 🔎 找出不同。試下每日都挑戰吧！
+            四大類別輪流出場 — 🌍 AI 通識 · 📜 AI 歷史館 · 💡 AI冷知識 · 🔎 找出不同。試下每日都挑戰吧！
           </p>
         </div>
       )}

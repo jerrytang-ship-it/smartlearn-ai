@@ -145,7 +145,9 @@ export default function Leaderboard() {
       const y = selectedMonth.getFullYear();
       const m = String(selectedMonth.getMonth() + 1).padStart(2, "0");
       const dateStr = `${y}-${m}-01`;
-      const { data } = await supabase.rpc("get_monthly_xp", { p_month: dateStr });
+      console.log("[Leaderboard] monthly fetch", { dateStr, nameMapSize: nameMap.size });
+      const { data, error } = await supabase.rpc("get_monthly_xp", { p_month: dateStr });
+      console.log("[Leaderboard] monthly result", { data, error });
 
       if (data) {
         setMonthlyEntries(data
