@@ -80,10 +80,20 @@ export default function CertificateViewer({
 
   const handleDownload = () => {
     if (!previewUrl) return;
-    const link = document.createElement("a");
-    link.download = `智學AI_${titleMap[type]}_${studentName}.png`;
-    link.href = previewUrl;
-    link.click();
+    // On mobile, open image in new tab so user can long-press to save
+    const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      const w = window.open();
+      if (w) {
+        w.document.write(`<img src="${previewUrl}" style="width:100%;max-width:600px;" />`);
+        w.document.title = "長按圖片保存證書";
+      }
+    } else {
+      const link = document.createElement("a");
+      link.download = `智學AI_${titleMap[type]}_${studentName}.png`;
+      link.href = previewUrl;
+      link.click();
+    }
   };
 
   const handleShare = () => {
@@ -101,8 +111,10 @@ export default function CertificateViewer({
             text: `我完成咗智學AI嘅${titleMap[type]}！🎉`,
             files: [file],
           });
-        } catch {
-          handleDownload();
+        } catch (err) {
+          if (err instanceof Error && err.name !== "AbortError") {
+            handleDownload();
+          }
         }
       } else {
         handleDownload();
