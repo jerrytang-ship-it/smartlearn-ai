@@ -16,9 +16,27 @@ export default function ChallengePage() {
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [alreadyCompleted, setAlreadyCompleted] = useState(false);
+  const [isNotToday, setIsNotToday] = useState(false);
 
   useEffect(() => {
     async function fetchQuestions() {
+      // Check if this challenge is today's
+      const { data: challengeData } = await supabase
+        .from("daily_challenges")
+        .select("date")
+        .eq("id", challengeId)
+        .single();
+
+      if (challengeData) {
+        // Use HK time (UTC+8) for date comparison
+        const now = new Date();
+        const hk = new Date(now.getTime() + (8 * 60 - now.getTimezoneOffset()) * 60000);
+        const todayStr = hk.toISOString().split("T")[0];
+        if (challengeData.date !== todayStr) {
+          setIsNotToday(true);
+        }
+      }
+
       const { data: qData } = await supabase
         .from("daily_challenge_q")
         .select("*")
@@ -97,6 +115,6 @@ export default function ChallengePage() {
     );
   }
 
-  // First time: earn XP (isReview=false). Already completed: no XP (isReview=true).
-  return <LessonPlayer preloadedQuestions={questions} isReview={alreadyCompleted} onComplete={handleComplete} />;
+  // First time today: earn XP. Already completed or past challenge: no XP.
+  return <LessonPlayer preloadedQuestions={questions} isReview={alreadyCompleted || isNotToday} onComplete={handleComplete} />;
 }

@@ -608,7 +608,7 @@ function MatchQuestion({
 
 // ─── Completion Screen ───
 
-function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice, chapterBonus }: { score: number; total: number; wrongIds: number[]; isReview?: boolean; unitId?: number; isPractice?: boolean; chapterBonus?: number }) {
+function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice, chapterBonus, isDailyChallenge }: { score: number; total: number; wrongIds: number[]; isReview?: boolean; unitId?: number; isPractice?: boolean; chapterBonus?: number; isDailyChallenge?: boolean }) {
   const percentage = Math.round((score / total) * 100);
   const questionXp = score * 15;
   const bonusXp = chapterBonus || 0;
@@ -629,7 +629,7 @@ function CompletionScreen({ score, total, wrongIds, isReview, unitId, isPractice
 
       {isPractice || isReview ? (
         <div className="bg-[#DCEEFB] border-2 border-[#2196F3]/20 rounded-3xl p-6 mb-6 w-full max-w-xs animate-bounce-in">
-          <p className="text-base font-bold text-[#2196F3]">溫馨提示：XP 只會喺第一次完成課堂時獲得</p>
+          <p className="text-base font-bold text-[#2196F3]">{isDailyChallenge ? "溫馨提示：只有第一次完成當天嘅每日挑戰先可以獲得 XP" : "溫馨提示：XP 只會喺第一次完成課堂時獲得"}</p>
         </div>
       ) : (
         <div className="bg-xp/20 border-2 border-xp rounded-3xl p-6 mb-6 w-full max-w-xs shadow-[0_4px_0_0_#F5B800] animate-bounce-in">
@@ -821,7 +821,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
   const handleAnswer = useCallback(async (correct: boolean, optionId: number) => {
     const qId = questions[currentIndex].id;
     const alreadyEarnedXP = xpEarnedIds.includes(qId);
-    const shouldEarnXP = correct && !isRetry && !alreadyEarnedXP && !alreadyCompleted;
+    const shouldEarnXP = correct && !isRetry && !alreadyEarnedXP && !alreadyCompleted && !isReview;
 
     if (correct) {
       const newCombo = combo + 1;
@@ -1052,6 +1052,7 @@ export default function LessonPlayer({ chapterId, reviewQuestionIds, preloadedQu
           unitId={unitId || undefined}
           isPractice={alreadyCompleted}
           chapterBonus={!alreadyCompleted && !isReview ? chapterXpReward : 0}
+          isDailyChallenge={!!preloadedQuestions}
         />
         {newCertificate && user && stats && (
           <CertificateViewer

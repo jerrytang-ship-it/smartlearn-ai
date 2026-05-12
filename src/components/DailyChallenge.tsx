@@ -94,9 +94,13 @@ function TodayHeroCard({ challenge, completed, score }: { challenge: Challenge |
           </div>
           <Link
             href={`/challenge/${challenge.id}`}
-            className="text-white text-xs font-extrabold px-4 py-2 rounded-full whitespace-nowrap bg-success shadow-[0_3px_0_0_#04B386]"
+            className={`text-xs font-extrabold px-4 py-2 rounded-full whitespace-nowrap ${
+              completed
+                ? "text-[#A0907E] bg-[#E0EAF0] shadow-[0_3px_0_0_#C4B5A5]"
+                : "text-white bg-success shadow-[0_3px_0_0_#04B386]"
+            }`}
           >
-            {completed ? "🔄 重做" : "立即開始 ▶"}
+            {completed ? "🔄 重玩" : "立即開始 ▶"}
           </Link>
         </div>
       </div>
@@ -105,7 +109,7 @@ function TodayHeroCard({ challenge, completed, score }: { challenge: Challenge |
       {completed && (
         <div className="bg-success/10 border-2 border-success/30 rounded-xl p-3 mt-3 flex items-center gap-2">
           <span className="text-xl">🎉</span>
-          <p className="text-xs text-success font-bold flex-1">你已經完成今日挑戰，點擊上面可以重做！</p>
+          <p className="text-xs text-success font-bold flex-1">你已經完成今日挑戰，點擊上面可以重玩！</p>
         </div>
       )}
 
@@ -174,17 +178,18 @@ function PastChallengeItem({ challenge, record }: { challenge: Challenge; record
       <div className="flex items-center gap-2 flex-shrink-0">
         {completed && (
           <span className="text-xs font-extrabold text-success">
-            {challenge.category === "fun_fact"
-              ? (record!.score >= 3 ? "✅ 猜中" : "❌ 未猜中")
-              : `${record!.score}/4 ${record!.score === 4 ? "✨" : ""}`
-            }
+            {`${record!.score}/4 ${record!.score === 4 ? "✨" : ""}`}
           </span>
         )}
         <Link
           href={`/challenge/${challenge.id}`}
-          className="text-xs font-bold text-white bg-success px-3 py-1.5 rounded-full shadow-[0_2px_0_0_#04B386]"
+          className={`text-xs font-bold px-3 py-1.5 rounded-full ${
+            completed
+              ? "text-[#A0907E] bg-[#E0EAF0] shadow-[0_2px_0_0_#C4B5A5]"
+              : "text-white bg-success shadow-[0_2px_0_0_#04B386]"
+          }`}
         >
-          重玩
+          🔄 重玩
         </Link>
       </div>
     </div>
@@ -224,7 +229,10 @@ export default function DailyChallenge() {
     async function fetchData() {
       if (!user) return;
 
-      const today = new Date().toISOString().split("T")[0];
+      // Use HK time (UTC+8) for date
+      const now = new Date();
+      const hk = new Date(now.getTime() + (8 * 60 - now.getTimezoneOffset()) * 60000);
+      const today = hk.toISOString().split("T")[0];
 
       // Fetch today's challenge
       const { data: todayData } = await supabase
