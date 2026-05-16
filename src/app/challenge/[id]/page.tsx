@@ -30,8 +30,8 @@ export default function ChallengePage() {
       if (challengeData) {
         // Use HK time (UTC+8) for date comparison
         const now = new Date();
-        const hk = new Date(now.getTime() + (8 * 60 - now.getTimezoneOffset()) * 60000);
-        const todayStr = hk.toISOString().split("T")[0];
+        const hk = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Hong_Kong" }));
+        const todayStr = `${hk.getFullYear()}-${String(hk.getMonth() + 1).padStart(2, "0")}-${String(hk.getDate()).padStart(2, "0")}`;
         if (challengeData.date !== todayStr) {
           setIsNotToday(true);
         }

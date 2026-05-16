@@ -32,8 +32,8 @@ export default function AnnouncementBanners({ page }: { page: string }) {
     async function fetchAnnouncements() {
       // Use HK time (UTC+8) for date
       const now = new Date();
-      const hk = new Date(now.getTime() + (8 * 60 - now.getTimezoneOffset()) * 60000);
-      const today = hk.toISOString().split("T")[0];
+      const hk = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Hong_Kong" }));
+      const today = `${hk.getFullYear()}-${String(hk.getMonth() + 1).padStart(2, "0")}-${String(hk.getDate()).padStart(2, "0")}`;
 
       const { data } = await supabase
         .from("announcements")
