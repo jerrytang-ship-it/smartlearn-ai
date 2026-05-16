@@ -30,7 +30,10 @@ export default function AnnouncementBanners({ page }: { page: string }) {
 
   useEffect(() => {
     async function fetchAnnouncements() {
-      const today = new Date().toISOString().split("T")[0];
+      // Use HK time (UTC+8) for date
+      const now = new Date();
+      const hk = new Date(now.getTime() + (8 * 60 - now.getTimezoneOffset()) * 60000);
+      const today = hk.toISOString().split("T")[0];
 
       const { data } = await supabase
         .from("announcements")

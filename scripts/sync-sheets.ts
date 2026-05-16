@@ -290,6 +290,7 @@ async function syncDailyChallenges(sheets: ReturnType<typeof google.sheets>) {
   const categoryMap: Record<string, string> = {
     "ai_in": "ai_in", "AI_in": "ai_in", "AI in": "ai_in", "ai in": "ai_in", "AI In": "ai_in",
     "history": "history", "History": "history", "AI History 101": "history", "ai history 101": "history",
+    "fun_fact": "fun_fact", "Fun Fact": "fun_fact", "fun fact": "fun_fact", "AI冷知識": "fun_fact", "ai冷知識": "fun_fact",
     "who_am_i": "who_am_i", "Who Am I": "who_am_i", "who am i": "who_am_i", "Who_Am_I": "who_am_i",
     "odd_one": "odd_one", "Odd One": "odd_one", "odd one": "odd_one", "Find the Odd One": "odd_one", "find the odd one": "odd_one",
   };

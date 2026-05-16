@@ -145,6 +145,13 @@ export default function ProfilePage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </a>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfLUYXBil6slRQF6TuI-66FhyJtWD8Ymy1VsknVf_N6plpiMQ/viewform" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#DCEEFB] active:scale-95 transition-all">
+            <span className="text-xl">💬</span>
+            <p className="flex-1 text-sm font-bold text-[#2D2D2D]">意見回饋</p>
+            <svg className="w-4 h-4 text-[#C4B5A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
           <Link href="/legal/terms" className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#DCEEFB] active:scale-95 transition-all">
             <span className="text-xl">📋</span>
             <p className="flex-1 text-sm font-bold text-[#2D2D2D]">條款及細則</p>
