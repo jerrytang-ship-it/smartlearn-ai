@@ -94,6 +94,7 @@ export default function ChallengePage() {
       score,
       completed_at: new Date().toISOString(),
     }, { onConflict: "user_id,challenge_id" });
+    await supabase.rpc("update_streak", { p_user_id: user.id });
     await refreshStats();
   };
 
