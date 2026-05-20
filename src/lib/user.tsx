@@ -145,6 +145,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
           const existingUser = await fetchUser(userId);
 
           if (existingUser) {
+            await supabase.rpc("check_streak", { p_user_id: existingUser.id });
             await fetchStats(existingUser.id);
             await supabase
               .from("users")
